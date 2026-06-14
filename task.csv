@@ -1,3 +1,12 @@
 id,task,status,notes,updated_at
 1,Create project AGENTS workflow rules,done,Added AGENTS.md for project-specific Codex workflow,2026-06-14 20:45:14 +0900
 2,Document current core game rules,done,Added proposal 002 and docs/core-rules.md with confirmed board victory card deck combat and engagement rules,2026-06-14 20:45:14 +0900
+3,Version rules and rename to 괴이전,done,Implemented proposal 004 by renaming visible game title and creating Korean rules v0.1 and v0.2,2026-06-14 21:06:57 +0900
+4,Configure GitHub Pages deployment,done,Added GitHub Actions Pages workflow and set Vite base to /goe/,2026-06-14 21:09:00 +0900
+5,Create user-facing tabs and routing,done,Implemented tabs for intro rules board card DB tutorial and dev notes with /goe/ paths,2026-06-14 21:14:13 +0900
+6,Add example card DB JSON,done,Created JSON-managed example soldier general and operation cards and consolidated rules to v0.1,2026-06-14 21:27:51 +0900
+7,Refactor styling and card DB assets,done,Moved component styling to Tailwind className and added card frame illustration assets filters print layout and fixed card rendering,2026-06-14 21:35:51 +0900
+8,Reuse GRNS card names and serials,done,Applied existing card pool names st01-r001 style serial convention and hid DB intro in print,2026-06-14 21:49:34 +0900
+9,Add faction emblems and position guide,done,Added emblem assets and data wiring and identified CardPreview coordinate classes,2026-06-14 21:58:45 +0900
+10,Create project sync markdown,done,Created one Markdown handoff note for another computer and LLM wiki context,2026-06-14 22:02:59 +0900
+11,Replace operation card names,done,Selected operation-like names from existing GRNS card pool and applied to operation cards,2026-06-14 22:02:59 +0900

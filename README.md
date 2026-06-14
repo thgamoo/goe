@@ -1,6 +1,6 @@
-# GRNS: Boundary Runners
+# 괴이전
 
-GRNS IP를 바탕으로 새 형태의 게임을 실험하기 위한 독립 웹사이트 세팅입니다. 기존 `grns-card`의 Vite + React 구성을 참고하되, 다른 GitHub repository로 분리하기 쉽도록 이 폴더만으로 실행과 빌드가 가능하게 구성했습니다.
+GRNS IP를 바탕으로 새 형태의 보드/카드 게임을 실험하기 위한 독립 웹사이트 세팅입니다. 기존 `grns-card`의 Vite + React 구성을 참고하되, 다른 GitHub repository로 분리하기 쉽도록 이 폴더만으로 실행과 빌드가 가능하게 구성했습니다.
 
 ## 실행
 
@@ -16,11 +16,12 @@ pnpm build
 pnpm preview
 ```
 
-## 규칙 문서
+## 룰 문서
 
-- [Core Game Rules Draft](./docs/core-rules.md)
+- [괴이전 룰 v0.1](./docs/rules/v0.1.md)
 - [Project Agent Rules Proposal](./proposals/001-project-agent-rules.md)
 - [Core Game Rules Proposal](./proposals/002-core-game-rules.md)
+- [Version Rules And Rename Proposal](./proposals/004-version-rules-and-rename-goeijeon.md)
 
 ## 다른 GitHub repo에 연결
 
