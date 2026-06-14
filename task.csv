@@ -10,3 +10,4 @@ id,task,status,notes,updated_at
 9,Add faction emblems and position guide,done,Added emblem assets and data wiring and identified CardPreview coordinate classes,2026-06-14 21:58:45 +0900
 10,Create project sync markdown,done,Created one Markdown handoff note for another computer and LLM wiki context,2026-06-14 22:02:59 +0900
 11,Replace operation card names,done,Selected operation-like names from existing GRNS card pool and applied to operation cards,2026-06-14 22:02:59 +0900
+12,Fix GitHub Pages pnpm setup,done,Installed pnpm before setup-node cache step in deploy workflow,2026-06-14 22:17:34 +0900
