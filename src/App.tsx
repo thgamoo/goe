@@ -6,6 +6,7 @@ import {
   ChevronRight,
   ClipboardList,
   Database,
+  Flag,
   Gamepad2,
   GitBranch,
   Grid3X3,
@@ -20,7 +21,7 @@ import fieldBoardArt from "./assets/field-board-art.png";
 import paperTexture from "./assets/paper-texture.png";
 import cardDatabase from "./data/cards.json";
 
-type TabId = "intro" | "rules" | "board" | "cards" | "tutorial" | "notes";
+type TabId = "intro" | "rules" | "board" | "occupation" | "cards" | "tutorial" | "notes";
 type CardType = "soldier" | "general" | "operation";
 type CardFilter = "all" | CardType;
 
@@ -55,10 +56,21 @@ type CardRecord = {
   timing?: string;
 };
 
+type OccupationCardRecord = {
+  id: string;
+  name: string;
+  theme: string;
+  front: string;
+  back: string;
+  frontLabel: string;
+  backLabel: string;
+};
+
 const tabs: Tab[] = [
   { id: "intro", label: "처음", path: "/", icon: Castle },
   { id: "rules", label: "룰", path: "/rules", icon: ScrollText },
   { id: "board", label: "보드", path: "/board", icon: Grid3X3 },
+  { id: "occupation", label: "점령카드", path: "/occupation", icon: Flag },
   { id: "cards", label: "카드 DB", path: "/cards", icon: Database },
   { id: "tutorial", label: "튜토리얼", path: "/tutorial", icon: Gamepad2 },
   { id: "notes", label: "개발노트", path: "/notes", icon: GitBranch },
@@ -71,6 +83,45 @@ const allCards = [
   ...cardDatabase.generals,
   ...cardDatabase.operations,
 ] as CardRecord[];
+
+const occupationCards: OccupationCardRecord[] = [
+  {
+    id: "occupation-berserker",
+    name: "광소하는 광전사",
+    theme: "붉은 안광",
+    front: "/goe/card-assets/occupation/berserker-front-p1.png",
+    back: "/goe/card-assets/occupation/berserker-back-p2.png",
+    frontLabel: "1P",
+    backLabel: "2P",
+  },
+  {
+    id: "occupation-dokkaebi-throne",
+    name: "옥좌의 외뿔 도깨비",
+    theme: "녹색 옥좌",
+    front: "/goe/card-assets/occupation/dokkaebi-throne-front-p1.png",
+    back: "/goe/card-assets/occupation/dokkaebi-throne-back-p2.png",
+    frontLabel: "1P",
+    backLabel: "2P",
+  },
+  {
+    id: "occupation-steel-giant",
+    name: "청철 촉수거인",
+    theme: "파란 쇳물",
+    front: "/goe/card-assets/occupation/steel-giant-front-p1.png",
+    back: "/goe/card-assets/occupation/steel-giant-back-p2.png",
+    frontLabel: "1P",
+    backLabel: "2P",
+  },
+  {
+    id: "occupation-purple-ghost",
+    name: "보랏빛 손아귀 귀신",
+    theme: "연보라 안광",
+    front: "/goe/card-assets/occupation/purple-ghost-front-p1.png",
+    back: "/goe/card-assets/occupation/purple-ghost-back-p2.png",
+    frontLabel: "1P",
+    backLabel: "2P",
+  },
+];
 
 const commandRules = [
   ["훈련", "훈련소에서 병사 카드 1장을 군영으로 가져온다."],
@@ -202,6 +253,7 @@ function App() {
       {activeTab === "intro" && <IntroPage onNavigate={navigate} />}
       {activeTab === "rules" && <RulesPage />}
       {activeTab === "board" && <BoardPage />}
+      {activeTab === "occupation" && <OccupationCardsPage />}
       {activeTab === "cards" && <CardsPage />}
       {activeTab === "tutorial" && <TutorialPage />}
       {activeTab === "notes" && <NotesPage />}
@@ -239,7 +291,7 @@ function IntroPage({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
           </button>
           <button
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 px-5 font-black text-[#f6efe3]"
-            onClick={() => onNavigate(tabs[3])}
+            onClick={() => onNavigate(tabs.find((tab) => tab.id === "cards") ?? tabs[0])}
             type="button"
           >
             카드 DB
@@ -290,45 +342,77 @@ function RulesPage() {
 }
 
 function BoardPage() {
+  const halfRowCells = ["", "접경", "접경", "접경", ""];
+  const fieldCells = Array.from({ length: 10 }, (_, index) => {
+    const row = Math.floor(index / 5);
+    const col = index % 5;
+    const isStartInfluence = row === 1 && col === 2;
+    const isFlankInfluence = row === 1 && (col === 1 || col === 3);
+    return { col, isFlankInfluence, isStartInfluence, row };
+  });
+
   return (
     <ContentPage eyebrow="battlefield" title="보드">
       <div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.8fr)] items-start gap-[clamp(24px,5vw,64px)] max-lg:grid-cols-1">
         <div className="max-w-xl">
-          <h3 className="mb-4 text-xl font-black">공유 5x5 전장</h3>
+          <h3 className="mb-4 text-xl font-black">내 쪽 2.5x5 전장</h3>
           <p className="mb-4 leading-8 text-[#211710]/70">
-            두 플레이어는 하나의 전장을 공유한다. 성은 점령지로 세지 않으며,
-            장군은 정사각형 전장 바깥의 성 영역에서 시작한다.
+            전체 전장은 5x5다. 화면은 한 플레이어가 바라보는 절반을 보여준다.
+            위의 반 줄은 중앙 접경선이고, 성은 5x5 밖에서 가운데 모서리에 붙은
+            정사각형 칸이다.
           </p>
           <p className="leading-8 text-[#211710]/70">
-            병사가 칸에 남으면 주둔 상태가 되고, 주둔 중인 칸은 그 플레이어가
-            점령한 땅이 된다.
+            병사가 칸에 남으면 주둔 상태가 되고, 주둔 중인 칸은 점령지가 된다.
+            성은 영향권의 시작점이지만 점령지로 세지 않는다.
           </p>
         </div>
-        <div className="grid gap-3">
-          <div className="grid grid-cols-5 gap-1.5">
-            {Array.from({ length: 25 }, (_, index) => {
-              const north = index === 2;
-              const south = index === 22;
-              return (
+        <div className="grid gap-4">
+          <div className="grid gap-1.5 rounded-lg border border-[#211710]/15 bg-[#fff8ea]/35 p-3 shadow-[0_16px_50px_rgba(33,23,16,.08)]">
+            <div className="grid grid-cols-5 gap-1.5">
+              {halfRowCells.map((label, index) => (
                 <div
-                  className={`grid aspect-[63/90] min-w-0 place-items-center rounded-md border text-xs font-black ${
-                    north || south
-                      ? "border-[#314d3a]/60 bg-[#314d3a]/15 text-[#314d3a]"
-                      : "border-[#211710]/15 bg-[#fff8ea]/40 text-[#211710]/40"
+                  className={`grid aspect-[2/1] min-w-0 place-items-center rounded-md border text-[.65rem] font-black ${
+                    label
+                      ? "border-[#7a2d21]/40 bg-[#7a2d21]/10 text-[#7a2d21]"
+                      : "border-[#211710]/10 bg-[#fff8ea]/30 text-[#211710]/25"
                   }`}
-                  key={index}
+                  key={`half-${index}`}
                 >
-                  {north || south ? "영향" : ""}
+                  {label}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+            <div className="grid grid-cols-5 gap-1.5">
+              {fieldCells.map(({ col, isFlankInfluence, isStartInfluence, row }) => (
+                <div
+                  className={`grid aspect-square min-w-0 place-items-center rounded-md border text-xs font-black ${
+                    isStartInfluence
+                      ? "border-[#314d3a]/65 bg-[#314d3a]/15 text-[#314d3a]"
+                      : isFlankInfluence
+                        ? "border-[#314d3a]/35 bg-[#314d3a]/8 text-[#314d3a]/70"
+                        : "border-[#211710]/15 bg-[#fff8ea]/45 text-[#211710]/35"
+                  }`}
+                  key={`${row}-${col}`}
+                >
+                  {isStartInfluence ? "시작" : isFlankInfluence ? "영향" : ""}
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-5 gap-1.5">
+              <div className="col-start-3 grid aspect-square min-w-0 place-items-center rounded-md border-2 border-[#9a3f2d]/60 bg-[#9a3f2d]/15 text-sm font-black text-[#6d241b]">
+                성
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-sm font-black text-[#6d241b]">
-            <span className="rounded-md border border-[#9a3f2d]/35 bg-[#9a3f2d]/10 p-3 text-center">
-              상대 성 / 장군
+          <div className="grid grid-cols-3 gap-2 text-xs font-black text-[#211710]/70 max-sm:grid-cols-1">
+            <span className="rounded-md border border-[#7a2d21]/25 bg-[#7a2d21]/10 p-3 text-center">
+              반 칸 접경선
+            </span>
+            <span className="rounded-md border border-[#314d3a]/35 bg-[#314d3a]/10 p-3 text-center">
+              시작 영향권
             </span>
             <span className="rounded-md border border-[#9a3f2d]/35 bg-[#9a3f2d]/10 p-3 text-center">
-              내 성 / 장군
+              성은 전장 밖
             </span>
           </div>
         </div>
@@ -341,6 +425,84 @@ function BoardPage() {
         />
       </figure>
     </ContentPage>
+  );
+}
+
+function OccupationCardsPage() {
+  return (
+    <ContentPage eyebrow="occupation cards" title="점령카드">
+      <div className="mb-7 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 print:hidden max-md:grid-cols-1">
+        <div className="max-w-3xl leading-8 text-[#211710]/70">
+          점령은 병사 카드를 뒤집어 표시하지 않고, 별도의 양면 점령카드로 표시한다.
+          5x5 전장에 맞춰 총 25장을 만들고, 앞면은 1P, 뒷면은 2P 소유권을 나타낸다.
+        </div>
+        <button
+          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-[#211710]/15 px-4 text-sm font-black text-[#211710]/70"
+          onClick={() => window.print()}
+          type="button"
+        >
+          <Printer size={15} aria-hidden="true" />
+          프린트
+        </button>
+      </div>
+
+      <div className="mb-8 grid grid-cols-3 gap-2 text-sm font-black text-[#211710]/70 print:hidden max-md:grid-cols-1">
+        <span className="rounded-md border border-[#9a3f2d]/25 bg-[#9a3f2d]/10 p-3 text-center">
+          고유 일러스트 25장
+        </span>
+        <span className="rounded-md border border-[#314d3a]/25 bg-[#314d3a]/10 p-3 text-center">
+          앞면 1P / 뒷면 2P
+        </span>
+        <span className="rounded-md border border-[#211710]/15 bg-[#fff8ea]/55 p-3 text-center">
+          병사가 아닌 영토 표시물
+        </span>
+      </div>
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6 print:flex print:flex-wrap print:items-start print:gap-0">
+        {occupationCards.map((card) => (
+          <OccupationCardPair card={card} key={card.id} />
+        ))}
+      </div>
+    </ContentPage>
+  );
+}
+
+function OccupationCardPair({ card }: { card: OccupationCardRecord }) {
+  return (
+    <article className="grid gap-3 print:contents">
+      <div className="print:hidden">
+        <h3 className="text-xl font-black">{card.name}</h3>
+        <p className="mt-1 text-sm font-bold text-[#211710]/55">{card.theme}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 print:contents">
+        <OccupationCardFace image={card.front} label={card.frontLabel} name={card.name} />
+        <OccupationCardFace image={card.back} label={card.backLabel} name={`${card.name} SD`} />
+      </div>
+    </article>
+  );
+}
+
+function OccupationCardFace({
+  image,
+  label,
+  name,
+}: {
+  image: string;
+  label: string;
+  name: string;
+}) {
+  return (
+    <figure className="relative isolate aspect-[63/90] overflow-hidden rounded-lg border border-[#24170f]/25 bg-[#17110c] shadow-[0_18px_42px_rgba(33,23,16,.18)] print:h-[90mm] print:w-[63mm] print:break-inside-avoid print:rounded-none print:shadow-none">
+      <img className="absolute inset-0 size-full object-cover" src={image} alt={`${name} ${label}`} />
+      <div className="absolute inset-x-0 bottom-0 z-10 bg-[linear-gradient(0deg,rgba(13,9,7,.82),rgba(13,9,7,0))] px-3 pb-3 pt-12 print:hidden">
+        <figcaption className="flex items-end justify-between gap-2 text-[#fff8ea]">
+          <span className="min-w-0 truncate text-sm font-black">{name}</span>
+          <span className="rounded-full border border-white/25 bg-black/25 px-2 py-0.5 text-xs font-black">
+            {label}
+          </span>
+        </figcaption>
+      </div>
+    </figure>
   );
 }
 

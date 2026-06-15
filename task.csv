@@ -11,3 +11,5 @@ id,task,status,notes,updated_at
 10,Create project sync markdown,done,Created one Markdown handoff note for another computer and LLM wiki context,2026-06-14 22:02:59 +0900
 11,Replace operation card names,done,Selected operation-like names from existing GRNS card pool and applied to operation cards,2026-06-14 22:02:59 +0900
 12,Fix GitHub Pages pnpm setup,done,Installed pnpm before setup-node cache step in deploy workflow,2026-06-14 22:17:34 +0900
+13,Rework operation effects and half-board view,done,Aligned operation effects and rendered 2.5x5 player-side board with outside castle,2026-06-15 10:14:07 +0900
+14,Add occupation card tab and printable previews,in_progress,Approved proposal 015 to add 1P/2P occupation card previews with generated art,2026-06-15 11:26:42 +0900
