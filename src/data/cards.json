@@ -43,8 +43,8 @@
       "quantity": 3,
       "rarity": "C",
       "serial": "onb-002",
-      "effect": "`기마` 타입 유닛과 교전 전, 상대의 병력 추가로 -1.",
-      "flavor": "타입 상성, 교전 전 효과, 대각 장악과 전방 공격의 차이를 가르친다.",
+      "effect": "`기마` 타입 유닛과 국면 시작 전, 상대의 병력 추가로 -1.",
+      "flavor": "타입 상성, 국면 시작 전 효과, 대각 장악과 전방 공격의 차이를 가르친다.",
       "sigil": "槍",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "packId": "GOE-ONB01",
@@ -203,6 +203,7 @@
       "flavor": "일반 병사는 낸 차례나 이동 후 바로 공격하기 어렵다는 기본 제한을 깨는 키워드를 보여준다.",
       "sigil": "怪",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-08.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "전투광"
@@ -227,7 +228,7 @@
       "quantity": 2,
       "rarity": "U",
       "serial": "onb-009",
-      "effect": "`[출정]` 장악 범위 내의 상대 병사를 왼쪽 혹은 오른쪽으로 이동시킨다. 만약 이 효과로 공격 범위 내로 들어올 경우 `보류` 없이 공격할 수 있다.",
+      "effect": "`[출정]` 장악 범위 내의 상대 병사를 왼쪽 혹은 오른쪽으로 이동시킨다. 만약 이 효과로 공격 범위 내로 들어올 경우 `전령` 없이 공격할 수 있다.",
       "flavor": "출정 효과로 상대 위치를 바꾸고 즉시 공격 기회를 만드는 사로국의 조작형 플레이를 보여준다.",
       "sigil": "山",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
@@ -255,7 +256,7 @@
       "quantity": 2,
       "rarity": "U",
       "serial": "onb-010",
-      "effect": "`[출정]` 장악 범위 내의 상대 병사를 왼쪽 혹은 오른쪽으로 이동시킨다. 만약 이 효과로 공격 범위 내로 들어올 경우 `보류` 없이 공격할 수 있다.",
+      "effect": "`[출정]` 장악 범위 내의 상대 병사를 왼쪽 혹은 오른쪽으로 이동시킨다. 만약 이 효과로 공격 범위 내로 들어올 경우 `전령` 없이 공격할 수 있다.",
       "flavor": "산도깨비와 반대 범위 구조로, 같은 효과가 다른 범위 패턴에서 어떻게 작동하는지 보여준다.",
       "sigil": "水",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
@@ -287,6 +288,7 @@
       "flavor": "가락의 기본 상하좌우 병사 골격을 잡는다.",
       "sigil": "鐵",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-11.png",
       "packId": "GOE-ONB01",
       "keywords": [],
       "faction": "가락",
@@ -313,6 +315,7 @@
       "flavor": "가락의 대각/측면 압박 병사 골격을 잡는다.",
       "sigil": "蛛",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-12.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "자폭"
@@ -337,10 +340,11 @@
       "quantity": 1,
       "rarity": "R",
       "serial": "onb-013",
-      "effect": "교전 시작 시 이웃한 철기 유닛당 병력 +1.",
+      "effect": "국면 시작 시 이웃한 철기 유닛당 병력 +1.",
       "flavor": "높은 병력과 넓은 범위를 가진 가락의 대형 병사 축을 잡는다.",
       "sigil": "巨",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-13.png",
       "packId": "GOE-ONB01",
       "keywords": [],
       "faction": "가락",
@@ -367,6 +371,7 @@
       "flavor": "전사한 카드가 매장지로 가고, 단말마로 매장지의 병사를 다시 전장에 끌어올 수 있음을 보여준다.",
       "sigil": "喪",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-14.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "단말마"
@@ -395,6 +400,7 @@
       "flavor": "십제의 귀신 병사가 인간을 제물로 삼아 병력을 얻는 구조를 보여준다.",
       "sigil": "花",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-15.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "출정"
@@ -425,6 +431,7 @@
       "flavor": "장군이 직접 전투하기보다 병력을 점령으로 바꾸고 퇴장하는 특수 출정 효과를 보여준다.",
       "sigil": "路",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-16.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "출정"
@@ -503,8 +510,8 @@
       "quantity": 1,
       "rarity": "R",
       "serial": "onb-004",
-      "effect": "`[출정]` 현재 교전 중이라면 모든 교전을 종료한다. 이 효과로 중단된 교전의 수만큼 `[보급]`한다. 이후 국면을 전환한다.",
-      "flavor": "여러 교전을 강제로 정리하고 국면을 전환하는 장군 효과를 보여준다.",
+      "effect": "`[출정]` 현재 국면 중이라면 모든 국면을 종료한다. 이 효과로 중단된 국면의 수만큼 `[보급]`한다. 이후 국면을 전환한다.",
+      "flavor": "여러 국면을 강제로 정리하고 국면을 전환하는 장군 효과를 보여준다.",
       "sigil": "止",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "packId": "GOE-ONB01",
@@ -535,6 +542,7 @@
       "flavor": "전사한 장군이 다른 장군으로 교체되는 십제의 계승/귀환 구조를 보여준다.",
       "sigil": "多",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-20.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "단말마",
@@ -564,6 +572,7 @@
       "flavor": "특정 장군을 기지 위에 올려 다음 보급 흐름을 조작하는 십제의 순환 구조를 보여준다.",
       "sigil": "德",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "illustration": "/goe/card-assets/illustrations/card-21.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "출정"
@@ -611,13 +620,13 @@
       "quantity": 3,
       "rarity": "C",
       "serial": "onb-002",
-      "effect": "내 병사 하나를 지정한다. 해당 병사와 해당 병사와 이웃한 모든 병사를 상대의 공격 영향범위 밖으로 이동시킨다. 이동시킨 칸 수만큼 내 패를 `보류`한다. 보류할 수 없다면 이동할 수 없다.",
-      "flavor": "퇴각으로 교전을 끊는 방법과 보류 비용을 가르친다.",
+      "effect": "내 병사 하나를 지정한다. 해당 병사와 해당 병사와 이웃한 모든 병사를 상대의 공격 영향범위 밖으로 이동시킨다. 이동시킨 칸 수만큼 내 패를 `전령`으로 보낸다. 전령으로 보낼 수 없다면 이동할 수 없다.",
+      "flavor": "퇴각으로 공격 영향범위에서 벗어나는 방법과 전령 비용을 가르친다.",
       "sigil": "退",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "packId": "GOE-ONB01",
       "keywords": [
-        "보류"
+        "전령"
       ],
       "faction": "중립",
       "classId": "neutral",
@@ -634,8 +643,8 @@
       "quantity": 2,
       "rarity": "U",
       "serial": "onb-003",
-      "effect": "이번 교전 동안 내 모든 병사는 공격 시 상대의 병력 추가로 -1. 교전이 끝나면 모든 병사는 전사한다.",
-      "flavor": "교전 전체에 적용되는 강력한 일회성 강화와 종료 페널티를 보여준다.",
+      "effect": "이번 국면 동안 내 모든 병사는 공격 시 상대의 병력 추가로 -1. 국면이 끝나면 모든 병사는 전사한다.",
+      "flavor": "국면 전체에 적용되는 강력한 일회성 강화와 종료 페널티를 보여준다.",
       "sigil": "狂",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "packId": "GOE-ONB01",
@@ -791,8 +800,8 @@
       "quantity": 2,
       "rarity": "U",
       "serial": "onb-004",
-      "effect": "이번 교전이 끝나면 내 모든 병력이 0인 병사들 병력 +1.",
-      "flavor": "교전 종료 시점과 병력 0 병사를 회복시키는 예맥의 끈질긴 운영을 보여준다.",
+      "effect": "이번 국면이 끝나면 내 모든 병력이 0인 병사들 병력 +1.",
+      "flavor": "국면 종료 시점과 병력 0 병사를 회복시키는 예맥의 끈질긴 운영을 보여준다.",
       "sigil": "肉",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "packId": "GOE-ONB01",
@@ -897,14 +906,14 @@
       "name": "비",
       "rarity": "C",
       "serial": "goe-w002",
-      "effect": "이동 시 [보류 1]",
+      "effect": "이동 시 [전령 1]",
       "flavor": "",
       "sigil": "雨",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "illustration": "/goe/card-assets/weather/weather-rain-ink.png",
       "packId": "GOE-EX01",
       "keywords": [
-        "보류"
+        "전령"
       ],
       "classId": "weather",
       "className": "날씨",
@@ -918,14 +927,14 @@
       "name": "눈",
       "rarity": "C",
       "serial": "goe-w003",
-      "effect": "공격 시 [보류 1]",
+      "effect": "공격 시 [전령 1]",
       "flavor": "",
       "sigil": "雪",
       "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
       "illustration": "/goe/card-assets/weather/weather-snow-ink.png",
       "packId": "GOE-EX01",
       "keywords": [
-        "보류"
+        "전령"
       ],
       "classId": "weather",
       "className": "날씨",
@@ -1080,7 +1089,8 @@
       "effect": "내 인간 1장을 지정한다. 이번 차례 `[전투광]`을 얻는다.",
       "flavor": "예맥 인간 병사에게 이동 후 공격 가능한 압박 턴을 만들어주는 대장군 명령을 보여준다.",
       "sigil": "武",
-      "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "frame": "/goe/card-assets/common/goe-grand-general-frame-v1.svg",
+      "illustration": "/goe/card-assets/grand-generals/muhyul-ink-v1.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "명령",
@@ -1097,18 +1107,19 @@
     {
       "id": "onb-gg-talhae",
       "cardType": "grandGeneral",
-      "name": "탈해 이사금",
+      "name": "아루",
       "quantity": 1,
       "rarity": "SR",
       "serial": "onb-gg002",
-      "effect": "내 병사 1장을 지정한다. 이번 차례 해당 병사의 병력으로 `[보류]` 없이 `장악`할 수 있다.",
+      "effect": "내 병사 1장을 지정한다. 이번 차례 해당 병사의 병력으로 `[전령]` 없이 `장악`할 수 있다.",
       "flavor": "사로국의 위치 조작과 장악을 더 빠르게 연결하는 대장군 명령을 보여준다.",
-      "sigil": "脫",
-      "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "sigil": "娥",
+      "frame": "/goe/card-assets/common/goe-grand-general-frame-v1.svg",
+      "illustration": "/goe/card-assets/grand-generals/aru-ink-v1.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "명령",
-        "보류"
+        "전령"
       ],
       "faction": "사로국",
       "classId": "saro",
@@ -1125,10 +1136,11 @@
       "quantity": 1,
       "rarity": "SR",
       "serial": "onb-gg003",
-      "effect": "내 병사 1장을 지정한다. 해당 병사가 교전 중일 경우 `[교전]`을 종료한다. 그 후 국면을 전환한다.",
-      "flavor": "가락이 불리한 교전을 끊고 국면을 강제로 넘기는 리더 운영을 보여준다.",
+      "effect": "내 병사 1장을 지정한다. 해당 병사가 국면 중일 경우 `[국면]`을 종료한다. 그 후 국면을 전환한다.",
+      "flavor": "가락이 불리한 국면을 끊고 국면 전환을 강제로 만드는 리더 운영을 보여준다.",
       "sigil": "九",
-      "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "frame": "/goe/card-assets/common/goe-grand-general-frame-v1.svg",
+      "illustration": "/goe/card-assets/grand-generals/gugan-ink-v1.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "명령"
@@ -1144,18 +1156,19 @@
     {
       "id": "onb-gg-geongilji",
       "cardType": "grandGeneral",
-      "name": "내려온 건길지",
+      "name": "귀후 어륙",
       "quantity": 1,
       "rarity": "SR",
       "serial": "onb-gg004",
-      "effect": "내 병사 1장을 지정한다. 해당 병사가 이번 차례에 전사할 경우 `[보류]`한다.",
+      "effect": "내 병사 1장을 지정한다. 해당 병사가 이번 차례에 전사할 경우 `[전령]`으로 보낸다.",
       "flavor": "십제가 전사를 다음 차례 보급 흐름으로 되돌리는 리더 운영을 보여준다.",
-      "sigil": "降",
-      "frame": "/goe/card-assets/common/goe-card-frame-minimal-v1.png",
+      "sigil": "鬼",
+      "frame": "/goe/card-assets/common/goe-grand-general-frame-v1.svg",
+      "illustration": "/goe/card-assets/grand-generals/guihu-eoryuk-ink-v1.png",
       "packId": "GOE-ONB01",
       "keywords": [
         "명령",
-        "보류"
+        "전령"
       ],
       "faction": "십제",
       "classId": "sipje",

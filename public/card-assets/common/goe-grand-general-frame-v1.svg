@@ -1,0 +1,16 @@
+<svg width="1400" height="1002" viewBox="0 0 1400 1002" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="1002" rx="52" fill="#fffdf8"/>
+  <rect x="18" y="18" width="1364" height="966" rx="44" fill="none" stroke="#120d09" stroke-width="34"/>
+  <rect x="48" y="48" width="1304" height="906" rx="26" fill="none" stroke="#fffaf0" stroke-width="22"/>
+  <path d="M78 79H1322M78 923H1322M79 78V924M1321 78V924" stroke="#17110c" stroke-width="7" stroke-linecap="round" stroke-dasharray="220 18 32 14 140 22"/>
+  <path d="M82 98C230 80 347 99 498 85C646 72 785 94 923 83C1054 72 1186 88 1314 77" stroke="#17110c" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+  <path d="M80 900C236 919 381 898 530 911C680 924 824 899 958 912C1096 925 1198 907 1320 925" stroke="#17110c" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+  <path d="M72 92V154M72 92H134M1328 92V154M1328 92H1266M72 910V848M72 910H134M1328 910V848M1328 910H1266" stroke="#b89345" stroke-width="5" stroke-linecap="square"/>
+  <path d="M90 105V153M90 105H138M1310 105V153M1310 105H1262M90 897V849M90 897H138M1310 897V849M1310 897H1262" stroke="#17110c" stroke-width="2.5" stroke-linecap="square" opacity=".65"/>
+  <path d="M58 706C216 686 359 704 519 692C675 680 834 697 993 688C1149 679 1263 690 1340 673V921H58V706Z" fill="#fffefb"/>
+  <path d="M58 706C228 678 373 701 536 688C700 675 848 694 1014 684C1178 674 1270 697 1340 674" stroke="#17110c" stroke-width="7" stroke-linecap="round" stroke-dasharray="300 18 52 16"/>
+  <path d="M58 724C219 710 359 722 519 711C675 699 833 718 991 707C1146 696 1264 708 1340 693" stroke="#b89345" stroke-width="2.2" opacity=".75"/>
+  <path d="M112 779H1188M112 836H1188" stroke="#211710" stroke-width="1.7" opacity=".16"/>
+  <path d="M94 714C147 702 185 711 239 705M1132 694C1194 705 1244 691 1300 701M88 912C160 899 215 918 286 905M1094 905C1162 918 1224 897 1294 911" stroke="#17110c" stroke-width="4" stroke-linecap="round" opacity=".28"/>
+  <path d="M78 675C215 655 355 675 511 662C670 648 833 667 997 657C1164 646 1277 666 1322 649" stroke="#fffdf8" stroke-width="10" stroke-linecap="round" opacity=".9"/>
+</svg>

@@ -168,17 +168,82 @@ const occupationPrintCards = occupationCards.flatMap((source) =>
 
 const occupationPrintSheets = chunk(occupationPrintCards, 9);
 
-const commandRules = [
+const quickRules = [
+  ["목표", "5x5 전장에서 절반 이상을 점령하면 승리한다."],
+  ["전쟁 준비", "대장군을 공개하고 기지 40장과 날씨 3장을 준비한다."],
+  ["차례", "보급을 받고 카드를 사용한 뒤 출정, 이동, 전투를 선택한다."],
+  ["전령", "쓰지 않을 카드를 덮어 다음 보급을 더 불러오게 한다."],
+  ["국면", "전투 선언으로 시작되는 전장 충돌 상태다."],
+  ["국면 전환", "국면이 끝나면 다음 날씨를 확인한다."],
+];
+
+const setupRules = [
+  ["대장군 공개", "각 플레이어는 대장군 1장을 공개하고 자기 성에서 시작한다."],
+  ["기지 준비", "병사, 장군, 도구, 작전 문서로 구성된 기지 40장을 준비한다."],
+  ["기우제", "각자 원하는 날씨 3장을 낸 뒤 가위바위보로 날씨 흐름을 정한다."],
+  [
+    "첫 날씨 확인",
+    "온보딩에서는 모든 날씨 효과를 외우지 않고, 지금 적용될 날씨만 본다.",
+  ],
+];
+
+const turnFlowRules = [
   [
     "보급",
-    "차례 시작마다 기지에서 4장을 받고, 보류 카드 수만큼 추가로 받는다.",
+    "차례 시작마다 기지에서 4장을 받고, 전령으로 보낸 카드 수만큼 추가로 받는다.",
   ],
-  ["출정", "병사를 자신의 영향권에 앞면으로 배치한다."],
-  ["전투", "유닛과 유닛 사이의 한 번의 싸움을 처리한다."],
+  ["사용", "병사, 도구, 작전 문서를 군영의 카드 수만큼 사용할 수 있다."],
+  ["출정", "병사를 자신의 영향권에 앞면으로 배치하고 주둔시킨다."],
   [
     "이동",
     "이동 가능 범위 안으로 이동한다. 점령지는 주둔을 포기해야 떠날 수 있다.",
   ],
+  ["전투", "공격범위 안의 상대 병사를 지정하고 한 번의 싸움을 처리한다."],
+  [
+    "전령",
+    "쓰지 않을 카드를 뒷면으로 보내 다음 차례의 추가 보급을 지시한다.",
+  ],
+];
+
+const boardRules = [
+  ["성", "5x5 전장 밖 가운데 모서리에 붙은 시작점. 점령지로 세지 않는다."],
+  ["영향권", "출정, 전투, 이동 등 행동 가능 범위를 판단하는 영역이다."],
+  ["주둔", "병사가 칸에 남아 그 칸을 지키는 상태다."],
+  ["점령", "병사가 주둔 중인 칸은 그 플레이어의 땅이 된다."],
+];
+
+const combatRules = [
+  ["전투 선언", "공격 병사의 공격범위 안에 있는 상대 병사를 하나 지정한다."],
+  ["반응 처리", "공격 선언 후 사용할 수 있는 작전과 전투 전 효과를 처리한다."],
+  ["피해 처리", "공격 병사와 대상 병사의 전투 피해와 전사 여부를 확인한다."],
+  ["국면 확인", "전투에 엮인 이웃 병사들을 같은 국면에 포함한다."],
+  ["국면 전환", "국면이 끝나면 보상을 처리하고 날씨를 바꾼다."],
+];
+
+const cardLayoutRules = [
+  "이동 범위",
+  "카드명",
+  "병력",
+  "용모파기",
+  "능력",
+  "종족 및 진영",
+  "엠블럼",
+  "레어도 및 시리얼",
+];
+
+const glossaryTerms = [
+  ["국면", "전투 선언으로 시작되어 엮인 이웃 병사들이 모두 전사할 때까지 지속되는 충돌 상태."],
+  ["차례", "플레이어가 보급, 카드 사용, 행동, 전령을 처리하는 턴."],
+  ["기지", "병사, 장군, 도구, 작전 문서가 들어 있는 40장 보급 묶음."],
+  ["군영", "플레이어의 패."],
+  [
+    "전령",
+    "군영의 카드를 뒷면으로 보내 다음 보급 때 그 수만큼 더 불러오는 행동.",
+  ],
+  ["명령", "대장군이 자기 차례에 한 번 사용할 수 있는 리더 능력."],
+  ["기우제", "각자 고른 날씨 3장으로 게임 시작 전 날씨 흐름을 정하는 절차."],
+  ["전투", "하나의 유닛과 유닛 사이에서 일어나는 한 번의 싸움."],
+  ["매장지", "사용된 카드와 전사한 카드가 가는 플레이어별 영역."],
 ];
 
 const tutorialSteps = [
@@ -187,18 +252,22 @@ const tutorialSteps = [
     "각 플레이어는 대장군 카드 1장을 공개하고 자기 성에서 시작한다.",
   ],
   [
-    "2. 보급을 받는다",
-    "차례마다 기지에서 4장을 받고 보류 카드 수만큼 더 받는다.",
+    "2. 기우제를 지낸다",
+    "각자 날씨 3장을 내고 가위바위보로 이번 전장의 날씨 흐름을 정한다.",
   ],
   [
-    "3. 카드를 사용한다",
+    "3. 보급을 받는다",
+    "차례마다 기지에서 4장을 받고 전령으로 보낸 카드 수만큼 더 받는다.",
+  ],
+  [
+    "4. 카드를 사용한다",
     "병사, 도구, 작전 문서를 군영의 카드 수만큼 사용할 수 있다.",
   ],
   [
-    "4. 전투와 교전을 처리한다",
-    "전투 중인 병사와 장군이 공격범위에 엮이면 교전 상태가 된다.",
+    "5. 전투와 국면을 처리한다",
+    "전투 선언과 동시에 해당 전투에 엮인 병사들은 국면에 들어간다.",
   ],
-  ["5. 국면을 전환한다", "교전이 끝나면 국면이 바뀌고 날씨가 바뀐다."],
+  ["6. 국면을 전환한다", "국면이 끝나면 날씨가 바뀐다."],
 ];
 
 const openQuestions = [
@@ -315,7 +384,7 @@ function App() {
       </header>
 
       {activeTab === "intro" && <IntroPage onNavigate={navigate} />}
-      {activeTab === "rules" && <RulesPage />}
+      {activeTab === "rules" && <RulesPage onNavigate={navigate} />}
       {activeTab === "board" && <BoardPage />}
       {activeTab === "occupation" && <OccupationCardsPage />}
       {activeTab === "cards" && <CardsPage />}
@@ -368,49 +437,220 @@ function IntroPage({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   );
 }
 
-function RulesPage() {
+function RulesPage({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
+  const boardTab = tabs.find((tab) => tab.id === "board") ?? tabs[0];
+  const cardsTab = tabs.find((tab) => tab.id === "cards") ?? tabs[0];
+  const tutorialTab = tabs.find((tab) => tab.id === "tutorial") ?? tabs[0];
+
   return (
     <ContentPage eyebrow="rules v0.1" title="룰">
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.85fr)] gap-[clamp(22px,5vw,64px)] max-lg:grid-cols-1">
-        <div>
-          <h3 className="mb-4 text-xl font-black">핵심 흐름</h3>
-          <ol className="grid gap-3 pl-5 leading-8 text-[#211710]/75">
-            <li>대장군을 공개하고 자기 성에서 시작한다.</li>
-            <li>차례마다 기지에서 4장을 보급받는다.</li>
-            <li>병사, 도구, 작전 문서를 군영의 카드 수만큼 사용할 수 있다.</li>
-            <li>대장군은 자기 차례에 한 번 명령을 사용할 수 있다.</li>
-            <li>전투는 유닛과 유닛 사이의 한 번의 싸움이다.</li>
-          </ol>
-        </div>
-        <div className="rounded-lg border border-[#211710]/15 bg-[#fff8ea]/50 p-6 shadow-[0_16px_50px_rgba(33,23,16,.08)]">
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.72fr)] gap-[clamp(22px,5vw,64px)] max-lg:grid-cols-1">
+        <section>
+          <h3 className="mb-4 text-2xl font-black">전장의 큰 줄기</h3>
+          <p className="max-w-3xl leading-8 text-[#211710]/72">
+            괴이전은 공유 5x5 전장에서 병사를 출정시켜 땅을 점령하는
+            게임이다. 병사가 칸에 남아 주둔하면 그 칸은 내 땅이 되고, 전장의
+            절반 이상을 차지하면 승리한다.
+          </p>
+          <div className="mt-6 grid grid-cols-3 gap-3 max-xl:grid-cols-2 max-sm:grid-cols-1">
+            {quickRules.map(([name, text]) => (
+              <RuleMiniCard key={name} title={name}>
+                {text}
+              </RuleMiniCard>
+            ))}
+          </div>
+        </section>
+        <aside className="rounded-lg border border-[#211710]/15 bg-[#fff8ea]/50 p-6 shadow-[0_16px_50px_rgba(33,23,16,.08)]">
           <BookOpenText
             className="mb-4 text-[#9a3f2d]"
             size={24}
             aria-hidden="true"
           />
-          <h3 className="mb-3 text-xl font-black">현재 문서</h3>
+          <h3 className="mb-3 text-xl font-black">읽는 순서</h3>
           <p className="leading-7 text-[#211710]/70">
-            기준 룰은{" "}
+            처음에는 전쟁 준비와 차례 흐름만 익히고, 전투가 처음 선언될 때
+            국면과 날씨를 확인한다. 전체 기준 문서는{" "}
             <code className="rounded bg-[#211710]/10 px-1.5 py-0.5">
               docs/rules/v0.1.md
             </code>
-            다. 카드 DB의 기지 구성 규칙도 이 문서에 함께 반영한다.
+            에 함께 정리한다.
           </p>
-        </div>
+          <div className="mt-5 grid gap-2">
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[#9a3f2d]/25 bg-[#9a3f2d]/10 px-4 text-sm font-black text-[#7a2d21] transition hover:bg-[#9a3f2d]/15"
+              onClick={() => onNavigate(tutorialTab)}
+              type="button"
+            >
+              <Gamepad2 size={16} aria-hidden="true" />
+              튜토리얼
+            </button>
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[#211710]/15 bg-white/35 px-4 text-sm font-black text-[#211710]/75 transition hover:bg-white/55"
+              onClick={() => onNavigate(boardTab)}
+              type="button"
+            >
+              <Grid3X3 size={16} aria-hidden="true" />
+              보드 보기
+            </button>
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[#211710]/15 bg-white/35 px-4 text-sm font-black text-[#211710]/75 transition hover:bg-white/55"
+              onClick={() => onNavigate(cardsTab)}
+              type="button"
+            >
+              <Database size={16} aria-hidden="true" />
+              카드 DB
+            </button>
+          </div>
+        </aside>
       </div>
 
-      <div className="mt-8 grid grid-cols-4 gap-3 max-lg:grid-cols-2 max-sm:grid-cols-1">
-        {commandRules.map(([name, text]) => (
-          <article
-            className="rounded-lg border border-[#211710]/15 bg-[#fff8ea]/50 p-5 shadow-[0_16px_50px_rgba(33,23,16,.08)]"
-            key={name}
-          >
-            <h3 className="mb-2 text-lg font-black">{name}</h3>
-            <p className="leading-7 text-[#211710]/70">{text}</p>
-          </article>
-        ))}
+      <RulesSection eyebrow="setup" title="전쟁 준비">
+        <div className="grid grid-cols-4 gap-3 max-xl:grid-cols-2 max-sm:grid-cols-1">
+          {setupRules.map(([name, text]) => (
+            <RuleMiniCard key={name} title={name}>
+              {text}
+            </RuleMiniCard>
+          ))}
+        </div>
+      </RulesSection>
+
+      <RulesSection eyebrow="turn" title="차례 흐름">
+        <div className="grid grid-cols-6 gap-3 max-2xl:grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1">
+          {turnFlowRules.map(([name, text], index) => (
+            <article
+              className="relative rounded-lg border border-[#211710]/15 bg-[#fff8ea]/50 p-5 shadow-[0_16px_50px_rgba(33,23,16,.08)]"
+              key={name}
+            >
+              <span className="mb-3 grid size-8 place-items-center rounded-full bg-[#211710] text-sm font-black text-[#fff8ea]">
+                {index + 1}
+              </span>
+              <h3 className="mb-2 text-lg font-black">{name}</h3>
+              <p className="leading-7 text-[#211710]/70">{text}</p>
+            </article>
+          ))}
+        </div>
+      </RulesSection>
+
+      <div className="mt-8 grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+        <RulesSection eyebrow="field" title="전장과 점령" compact={true}>
+          <div className="grid gap-3">
+            {boardRules.map(([name, text]) => (
+              <RuleLine key={name} title={name}>
+                {text}
+              </RuleLine>
+            ))}
+          </div>
+        </RulesSection>
+        <RulesSection eyebrow="combat" title="전투와 국면" compact={true}>
+          <ol className="grid gap-3">
+            {combatRules.map(([name, text], index) => (
+              <li
+                className="grid grid-cols-[auto_1fr] gap-3 rounded-lg border border-[#211710]/10 bg-white/30 p-4"
+                key={name}
+              >
+                <span className="mt-0.5 grid size-7 place-items-center rounded-full bg-[#9a3f2d] text-xs font-black text-white">
+                  {index + 1}
+                </span>
+                <span>
+                  <strong className="block text-sm font-black text-[#211710]">
+                    {name}
+                  </strong>
+                  <span className="mt-1 block leading-7 text-[#211710]/70">
+                    {text}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </RulesSection>
       </div>
+
+      <RulesSection eyebrow="card layout" title="카드 읽는 법">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(220px,.55fr)] gap-4 max-lg:grid-cols-1">
+          <p className="leading-8 text-[#211710]/72">
+            병사 카드는 움직임, 병력, 효과를 한 장에서 읽는다. 초보자는 먼저
+            왼쪽 위 이동 범위와 오른쪽 위 병력, 가운데 능력만 보면 된다. 세부
+            진영 정보와 시리얼은 카드 DB에서 확인한다.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {cardLayoutRules.map((item) => (
+              <span
+                className="rounded-md border border-[#211710]/10 bg-white/35 px-3 py-2 text-sm font-black text-[#211710]/75"
+                key={item}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </RulesSection>
+
+      <RulesSection eyebrow="keywords" title="용어">
+        <dl className="grid grid-cols-2 gap-3 max-lg:grid-cols-1">
+          {glossaryTerms.map(([name, text]) => (
+            <div
+              className="rounded-lg border border-[#211710]/10 bg-[#fff8ea]/45 p-4"
+              key={name}
+            >
+              <dt className="mb-1 text-sm font-black text-[#9a3f2d]">{name}</dt>
+              <dd className="leading-7 text-[#211710]/70">{text}</dd>
+            </div>
+          ))}
+        </dl>
+      </RulesSection>
     </ContentPage>
+  );
+}
+
+function RulesSection({
+  children,
+  compact = false,
+  eyebrow,
+  title,
+}: {
+  children: ReactNode;
+  compact?: boolean;
+  eyebrow: string;
+  title: string;
+}) {
+  return (
+    <section className={compact ? "" : "mt-8"}>
+      <p className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-[#9a3f2d]/70">
+        {eyebrow}
+      </p>
+      <h3 className="mb-4 text-2xl font-black">{title}</h3>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+function RuleMiniCard({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  return (
+    <article className="rounded-lg border border-[#211710]/15 bg-[#fff8ea]/50 p-5 shadow-[0_16px_50px_rgba(33,23,16,.08)]">
+      <h3 className="mb-2 text-lg font-black">{title}</h3>
+      <p className="leading-7 text-[#211710]/70">{children}</p>
+    </article>
+  );
+}
+
+function RuleLine({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  return (
+    <div className="grid grid-cols-[72px_1fr] gap-3 rounded-lg border border-[#211710]/10 bg-white/30 p-4 max-sm:grid-cols-1">
+      <strong className="text-sm font-black text-[#9a3f2d]">{title}</strong>
+      <p className="leading-7 text-[#211710]/70">{children}</p>
+    </div>
   );
 }
 
@@ -925,7 +1165,11 @@ function CardsPage() {
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-5 print:flex print:flex-wrap print:items-start print:gap-0">
         {filteredCards.map((card) => (
-          <CardPreview card={card} key={card.id} />
+          card.cardType === "grandGeneral" ? (
+            <GrandGeneralPreview card={card} key={card.id} />
+          ) : (
+            <CardPreview card={card} key={card.id} />
+          )
         ))}
       </div>
     </ContentPage>
@@ -1016,6 +1260,71 @@ function CardPreview({ card }: { card: CardRecord }) {
   );
 }
 
+function GrandGeneralPreview({ card }: { card: CardRecord }) {
+  const factionLabel = card.faction ?? "진영 없음";
+
+  return (
+    <article className="relative isolate aspect-[88/63] overflow-hidden rounded-xl border border-[#24170f]/25 bg-white shadow-[0_18px_42px_rgba(33,23,16,.18)] print:h-[63mm] print:w-[88mm] print:break-inside-avoid print:rounded-none print:shadow-none">
+      {card.illustration ? (
+        <img
+          className="absolute left-[4.2%] top-[4.8%] z-0 h-[68.8%] w-[91.6%] bg-white object-cover object-center"
+          src={card.illustration}
+          alt=""
+        />
+      ) : (
+        <div className="absolute left-[4.2%] top-[4.8%] z-0 grid h-[68.8%] w-[91.6%] place-items-center bg-white text-[clamp(3rem,8vw,5rem)] font-black text-[#211710]/10">
+          {card.sigil}
+        </div>
+      )}
+      {card.frame && (
+        <img
+          className="pointer-events-none absolute inset-0 z-20 size-full object-fill"
+          src={card.frame}
+          alt=""
+        />
+      )}
+      <div className="absolute left-[7.5%] top-[8%] z-40 flex h-[11%] w-[38%] items-center justify-center">
+        <img
+          className="pointer-events-none absolute inset-0 size-full object-fill opacity-95"
+          src={brushLabelImage}
+          alt=""
+        />
+        <h3 className="relative z-10 max-w-[80%] truncate text-center text-[clamp(.72rem,1.25vw,1.05rem)] font-black leading-none text-[#f8efdd] [text-shadow:0_1px_2px_rgba(0,0,0,.55)]">
+          {card.name}
+        </h3>
+      </div>
+      {card.emblem && (
+        <div className="absolute right-[6.6%] top-[7.1%] z-40 grid size-[9.5%] place-items-center">
+          <span className="absolute inset-[8%] rotate-45 border border-[#211710]/25 bg-white/82 shadow-[0_2px_8px_rgba(0,0,0,.14)]" />
+          <img
+            className="relative z-10 max-h-[78%] max-w-[78%] object-contain opacity-95"
+            src={card.emblem}
+            alt={`${factionLabel} 엠블럼`}
+          />
+        </div>
+      )}
+      <div className="absolute bottom-[17.4%] left-[12.3%] right-[12.3%] z-40 h-[12.5%] overflow-hidden">
+        <p className="line-clamp-3 text-[clamp(.56rem,1.08vw,.74rem)] font-bold leading-[1.42] text-[#211710]/82">
+          <CardEffectText text={card.effect} />
+        </p>
+      </div>
+      <div className="absolute bottom-[6.7%] left-[8.4%] z-40 max-w-[22%]">
+        <span className="block truncate text-[clamp(.52rem,.95vw,.68rem)] font-black text-[#211710]/78">
+          {card.typeSpeciesLabel ?? "대장군"}
+        </span>
+      </div>
+      <div className="absolute bottom-[6.7%] right-[8.4%] z-40 max-w-[28%] text-right text-[clamp(.52rem,.95vw,.68rem)] font-black text-[#211710]/78">
+        <span>{card.rarity}</span>
+        <span className="mx-1 text-[#211710]/35">/</span>
+        <span>{card.serial}</span>
+      </div>
+      <div className="sr-only">
+        대장군 {card.name} {factionLabel}
+      </div>
+    </article>
+  );
+}
+
 function CardEffectText({ text }: { text: string }) {
   const parts = text.split(/(`[^`]+`|\[[^\]]+\])/g).filter(Boolean);
 
@@ -1057,7 +1366,7 @@ function CardEffectText({ text }: { text: string }) {
 function KeywordChip({ keyword }: { keyword: string }) {
   return (
     <span
-      className={`mx-[1px] inline-flex items-center rounded-[4px] border px-[2px] py-0 text-[.84em] font-black leading-none align-baseline ${keywordChipClassName(
+      className={`-translate-y-[1px] mx-[0.5px] inline-flex items-center rounded-[4px] border px-[2px] py-0 text-[.84em] font-black leading-none align-baseline ${keywordChipClassName(
         keyword,
       )}`}
     >
@@ -1077,11 +1386,11 @@ function keywordChipClassName(keyword: string) {
     자폭: "border-[#334f43] bg-[#334f43] text-white",
     상시: "border-[#04713a] bg-[#04713a] text-white",
     퇴각: "border-[#0f4c9c] bg-[#0f4c9c] text-white",
-    보류: "border-[#0f4c9c] bg-[#edf4ff]/85 text-[#0f4c9c]",
-    보류1: "border-[#0f4c9c] bg-[#edf4ff]/85 text-[#0f4c9c]",
+    전령: "border-[#0f4c9c] bg-[#edf4ff]/85 text-[#0f4c9c]",
+    전령1: "border-[#0f4c9c] bg-[#edf4ff]/85 text-[#0f4c9c]",
     보급: "border-[#315847] bg-[#315847] text-white",
     장악: "border-[#c47b00] bg-[#fff5db]/90 text-[#c47b00]",
-    교전: "border-[#6f3b00] bg-[#6f3b00] text-white",
+    국면: "border-[#6f3b00] bg-[#6f3b00] text-white",
     자폭부여: "border-[#334f43] bg-[#334f43] text-white",
     회복: "border-[#04713a] bg-[#eaf7ef]/85 text-[#04713a]",
     이동: "border-[#465e55] bg-[#eef4ef]/85 text-[#465e55]",
@@ -1168,7 +1477,7 @@ function PowerCircle({ value }: { value: number }) {
 function SpeciesLine({ label }: { label: string }) {
   return (
     <div className="absolute bottom-[7.3%] left-[9.5%] z-40 max-w-[34%]">
-      <span className="block truncate border-b border-[#211710]/42 pb-[1px] text-[clamp(.5rem,.95vw,.66rem)] font-black text-[#211710]/78">
+      <span className="block truncate text-[clamp(.5rem,.95vw,.66rem)] font-black text-[#211710]/78">
         {label}
       </span>
     </div>
@@ -1177,7 +1486,7 @@ function SpeciesLine({ label }: { label: string }) {
 
 function CardMeta({ rarity, serial }: { rarity: string; serial: string }) {
   return (
-    <div className="absolute bottom-[7.3%] right-[9.5%] z-40 max-w-[38%] border-b border-[#211710]/42 pb-[1px] text-right text-[clamp(.48rem,.9vw,.64rem)] font-black text-[#211710]/78">
+    <div className="absolute bottom-[7.3%] right-[9.5%] z-40 max-w-[38%] text-right text-[clamp(.48rem,.9vw,.64rem)] font-black text-[#211710]/78">
       <span>{rarity}</span>
       <span className="mx-1 text-[#211710]/35">/</span>
       <span>{serial}</span>

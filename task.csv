@@ -32,7 +32,10 @@ id,task,status,notes,updated_at
 31,Clean factions keywords grand generals and print tabs,done,Implemented proposal 031 with grand general DB subtab print relocation neutral factions weather no faction and cleaned keyword filters,2026-06-28 13:43:47 +0900
 32,Sync cards JSON and improve card preview readability,done,Synced cards JSON to onboarding docs and updated card preview effect area keyword chips bold backticks and empty range grids,2026-06-28 13:57:50 +0900
 33,Fix card effect gap and image edge,done,Restored the full illustration area removed the paper overlay and lowered the effect text block below the image boundary,2026-06-28 14:15:18 +0900
-34,Create horizontal grand general cards,in_progress,Approved proposal 035 to create landscape grand general frame illustrations preview and Card DB print support,2026-06-28 14:16:40 +0900
-35,Generate faction ink card illustrations,in_progress,Approved proposal 036 to overwrite card-01 through card-27 with symbolic ink-wash illustrations and faction highlight colors,2026-06-28 14:15:16 +0900
-36,Regenerate weather cards as monochrome ink art,in_progress,Implement proposal 034 by creating 10 new black and white weather illustrations and reconnecting Card DB paths,2026-06-28 14:18:20 +0900
+34,Create horizontal grand general cards,done,Implemented landscape grand general preview with SVG frame source-based illustrations and 88x63mm print sizing,2026-06-28 15:56:30 +0900
+35,Generate faction ink card illustrations,in_progress,Generated and connected card-11 through card-15; remaining cards are outside this small batch,2026-06-29 00:46:11 +0900
+36,Regenerate weather cards as monochrome ink art,done,Created 10 new monochrome ink weather illustrations and reconnected Card DB paths,2026-06-28 15:48:56 +0900
 37,Fit keyword chips in card effects,done,Kept pill chips while reducing chip height removing vertical offset and increasing effect line height to avoid clipping,2026-06-28 14:28:16 +0900
+38,Generate referenced card art and replace grand generals,done,Connected Maro Goeyu Daru Deokjwa Aru and Guihu Eoryuk art and revised grand general cover frame rendering,2026-06-29 00:21:23 +0900
+39,Rework rules page onboarding structure,done,Implemented proposal 039 with rules page structure 기우제 setup and 전령 terminology across docs and card data,2026-06-29 00:06:00 +0900
+40,Unify engagement terminology as phase,done,Replaced 교전 with 국면 across rules card docs data and app copy and verified no 교전 references remain,2026-06-29 00:04:28 +0900

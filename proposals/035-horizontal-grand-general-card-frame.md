@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed.
+Implemented.
 
 ## Context
 
@@ -34,11 +34,11 @@ Existing relevant assets:
 
 ## Proposed Direction
 
-- Add a transparent landscape frame asset, e.g. `public/card-assets/common/goe-grand-general-frame-v1.png`.
+- Add a landscape frame asset, `public/card-assets/common/goe-grand-general-frame-v1.svg`.
 - Keep the title brush as a reusable overlay/component rather than baking it into the frame, so the title can remain real text.
 - Add a dedicated `GrandGeneralPreview` component.
 - Route `card.cardType === "grandGeneral"` to `GrandGeneralPreview` from Card DB.
-- Update grand general data to use the new landscape frame path.
+- Update grand general data to use the new landscape frame path and source-based landscape illustrations.
 - Use landscape print dimensions for grand generals: `88mm x 63mm`.
 - Keep regular cards untouched.
 
@@ -60,7 +60,8 @@ Existing relevant assets:
 - `src/data/cards.json`
 - `docs/project-sync.md`
 - `proposals/035-horizontal-grand-general-card-frame.md`
-- `public/card-assets/common/goe-grand-general-frame-v1.png`
+- `public/card-assets/common/goe-grand-general-frame-v1.svg`
+- `public/card-assets/grand-generals/*.png`
 - Optional generated preview/check assets under `public/card-assets/common/` or `/private/tmp`
 
 ## Implementation Steps After Approval
@@ -77,4 +78,13 @@ Existing relevant assets:
 
 ## Approval Needed
 
-Wait for the user to answer the clarification questions and confirm `go`.
+Approved by the user and implemented.
+
+## Implementation Notes
+
+- Grand general cards now render through a dedicated landscape `GrandGeneralPreview` component.
+- Print dimensions are set to `88mm x 63mm` for grand generals while regular cards keep the vertical card size.
+- The title brush remains a reusable React overlay using real text.
+- The top-right marker uses each card's faction emblem.
+- The four grand general illustrations are generated from the user-provided original illustration files into white-background landscape PNG assets.
+- The frame is a repository SVG asset rather than a Chromium-rendered PNG.
