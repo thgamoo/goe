@@ -21,9 +21,23 @@ import fieldBoardArt from "./assets/field-board-art.png";
 import paperTexture from "./assets/paper-texture.png";
 import cardDatabase from "./data/cards.json";
 
-type TabId = "intro" | "rules" | "board" | "occupation" | "cards" | "tutorial" | "notes";
-type CardType = "soldier" | "general" | "operation";
+type TabId =
+  | "intro"
+  | "rules"
+  | "board"
+  | "occupation"
+  | "cards"
+  | "tutorial"
+  | "notes";
+type CardType =
+  | "soldier"
+  | "general"
+  | "tool"
+  | "operation"
+  | "weather"
+  | "grandGeneral";
 type CardFilter = "all" | CardType;
+type CardDbView = "regular" | "grandGenerals";
 
 type Tab = {
   id: TabId;
@@ -46,13 +60,18 @@ type CardRecord = {
   frame?: string;
   packId?: string;
   keywords?: string[];
+  quantity?: number;
   faction?: string;
+  classId?: string;
   className?: string;
+  typeLabel?: string;
+  typeSpeciesLabel?: string;
   species?: string;
   movement?: string;
+  controlIconPosition?: string;
   capacity?: number;
   attackInfluence?: string;
-  powerCost?: number;
+  attackIconPosition?: string;
   timing?: string;
 };
 
@@ -77,12 +96,26 @@ const tabs: Tab[] = [
 ];
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const brushLabelImage = `${basePath}/card-assets/common/goe-card-brush-label-v1.png`;
+const rangeGridFrameImage = `${basePath}/card-assets/ranges/range-grid-frame.png`;
+const rangeCellControlImage = `${basePath}/card-assets/ranges/range-cell-control.png`;
+const rangeCellAttackImage = `${basePath}/card-assets/ranges/range-cell-attack.png`;
+const rangePersonMarkerImage = `${basePath}/card-assets/ranges/range-person-marker-v1.png`;
 
 const allCards = [
   ...cardDatabase.soldiers,
   ...cardDatabase.generals,
   ...cardDatabase.operations,
+  ...cardDatabase.tools,
+  ...cardDatabase.weather,
+  ...cardDatabase.grandGenerals,
 ] as CardRecord[];
+
+function chunk<T>(items: T[], size: number) {
+  return Array.from({ length: Math.ceil(items.length / size) }, (_, index) =>
+    items.slice(index * size, index * size + size),
+  );
+}
 
 const occupationCards: OccupationCardRecord[] = [
   {
@@ -123,26 +156,57 @@ const occupationCards: OccupationCardRecord[] = [
   },
 ];
 
+const occupationCopiesPerDesign = 27;
+
+const occupationPrintCards = occupationCards.flatMap((source) =>
+  Array.from({ length: occupationCopiesPerDesign }, (_, index) => ({
+    ...source,
+    copyNumber: index + 1,
+    printId: `${source.id}-${index + 1}`,
+  })),
+);
+
+const occupationPrintSheets = chunk(occupationPrintCards, 9);
+
 const commandRules = [
-  ["훈련", "훈련소에서 병사 카드 1장을 군영으로 가져온다."],
+  [
+    "보급",
+    "차례 시작마다 기지에서 4장을 받고, 보류 카드 수만큼 추가로 받는다.",
+  ],
   ["출정", "병사를 자신의 영향권에 앞면으로 배치한다."],
-  ["전투", "공격 영향권 안의 상대 병사를 지정하고 교전을 시작한다."],
-  ["이동", "이동 가능 범위 안으로 이동한다. 점령지는 주둔을 포기해야 떠날 수 있다."],
+  ["전투", "유닛과 유닛 사이의 한 번의 싸움을 처리한다."],
+  [
+    "이동",
+    "이동 가능 범위 안으로 이동한다. 점령지는 주둔을 포기해야 떠날 수 있다.",
+  ],
 ];
 
 const tutorialSteps = [
-  ["1. 장군을 공개한다", "각 플레이어는 장군 카드 1장을 공개하고 자기 성에서 시작한다."],
-  ["2. 병사를 훈련한다", "차례가 오면 훈련 명령으로 병사를 군영에 준비한다."],
-  ["3. 영향권에 출정한다", "병사는 본인의 영향권에만 앞면으로 배치할 수 있다."],
-  ["4. 교전을 해결한다", "작전 카드로 전멸, 항복, 퇴각 중 하나의 결과를 만든다."],
-  ["5. 국면을 전환한다", "교전이 끝나면 무조건 국면이 바뀐다."],
+  [
+    "1. 대장군을 공개한다",
+    "각 플레이어는 대장군 카드 1장을 공개하고 자기 성에서 시작한다.",
+  ],
+  [
+    "2. 보급을 받는다",
+    "차례마다 기지에서 4장을 받고 보류 카드 수만큼 더 받는다.",
+  ],
+  [
+    "3. 카드를 사용한다",
+    "병사, 도구, 작전 문서를 군영의 카드 수만큼 사용할 수 있다.",
+  ],
+  [
+    "4. 전투와 교전을 처리한다",
+    "전투 중인 병사와 장군이 공격범위에 엮이면 교전 상태가 된다.",
+  ],
+  ["5. 국면을 전환한다", "교전이 끝나면 국면이 바뀌고 날씨가 바뀐다."],
 ];
 
 const openQuestions = [
   "날씨와 지형의 종류",
-  "장군이 전투에 참여하는 예외 조건",
-  "장군 능력과 그 외 행동의 처리 순서",
-  "사용한 작전 카드 더미의 명칭과 재활용 규칙",
+  "도구 카드의 장착 제한과 지형 배치 제한",
+  "장군 카드의 기지 투입 제한",
+  "카드 능력과 그 외 행동의 처리 순서",
+  "사용한 카드 더미의 명칭과 재활용 규칙",
 ];
 
 function routeToTab(pathname: string): TabId {
@@ -291,7 +355,9 @@ function IntroPage({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
           </button>
           <button
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 px-5 font-black text-[#f6efe3]"
-            onClick={() => onNavigate(tabs.find((tab) => tab.id === "cards") ?? tabs[0])}
+            onClick={() =>
+              onNavigate(tabs.find((tab) => tab.id === "cards") ?? tabs[0])
+            }
             type="button"
           >
             카드 DB
@@ -309,19 +375,26 @@ function RulesPage() {
         <div>
           <h3 className="mb-4 text-xl font-black">핵심 흐름</h3>
           <ol className="grid gap-3 pl-5 leading-8 text-[#211710]/75">
-            <li>장군을 공개하고 자기 성에서 시작한다.</li>
-            <li>차례마다 명령을 하나 수행한다.</li>
-            <li>병사를 영향권에 출정시켜 주둔시킨다.</li>
-            <li>전투가 벌어지면 교전으로 승패를 결정한다.</li>
-            <li>교전이 끝날 때마다 국면이 전환된다.</li>
+            <li>대장군을 공개하고 자기 성에서 시작한다.</li>
+            <li>차례마다 기지에서 4장을 보급받는다.</li>
+            <li>병사, 도구, 작전 문서를 군영의 카드 수만큼 사용할 수 있다.</li>
+            <li>대장군은 자기 차례에 한 번 명령을 사용할 수 있다.</li>
+            <li>전투는 유닛과 유닛 사이의 한 번의 싸움이다.</li>
           </ol>
         </div>
         <div className="rounded-lg border border-[#211710]/15 bg-[#fff8ea]/50 p-6 shadow-[0_16px_50px_rgba(33,23,16,.08)]">
-          <BookOpenText className="mb-4 text-[#9a3f2d]" size={24} aria-hidden="true" />
+          <BookOpenText
+            className="mb-4 text-[#9a3f2d]"
+            size={24}
+            aria-hidden="true"
+          />
           <h3 className="mb-3 text-xl font-black">현재 문서</h3>
           <p className="leading-7 text-[#211710]/70">
-            기준 룰은 <code className="rounded bg-[#211710]/10 px-1.5 py-0.5">docs/rules/v0.1.md</code>다.
-            카드 DB의 덱 구성 규칙도 이 문서에 함께 반영한다.
+            기준 룰은{" "}
+            <code className="rounded bg-[#211710]/10 px-1.5 py-0.5">
+              docs/rules/v0.1.md
+            </code>
+            다. 카드 DB의 기지 구성 규칙도 이 문서에 함께 반영한다.
           </p>
         </div>
       </div>
@@ -383,20 +456,22 @@ function BoardPage() {
               ))}
             </div>
             <div className="grid grid-cols-5 gap-1.5">
-              {fieldCells.map(({ col, isFlankInfluence, isStartInfluence, row }) => (
-                <div
-                  className={`grid aspect-square min-w-0 place-items-center rounded-md border text-xs font-black ${
-                    isStartInfluence
-                      ? "border-[#314d3a]/65 bg-[#314d3a]/15 text-[#314d3a]"
-                      : isFlankInfluence
-                        ? "border-[#314d3a]/35 bg-[#314d3a]/8 text-[#314d3a]/70"
-                        : "border-[#211710]/15 bg-[#fff8ea]/45 text-[#211710]/35"
-                  }`}
-                  key={`${row}-${col}`}
-                >
-                  {isStartInfluence ? "시작" : isFlankInfluence ? "영향" : ""}
-                </div>
-              ))}
+              {fieldCells.map(
+                ({ col, isFlankInfluence, isStartInfluence, row }) => (
+                  <div
+                    className={`grid aspect-square min-w-0 place-items-center rounded-md border text-xs font-black ${
+                      isStartInfluence
+                        ? "border-[#314d3a]/65 bg-[#314d3a]/15 text-[#314d3a]"
+                        : isFlankInfluence
+                          ? "border-[#314d3a]/35 bg-[#314d3a]/8 text-[#314d3a]/70"
+                          : "border-[#211710]/15 bg-[#fff8ea]/45 text-[#211710]/35"
+                    }`}
+                    key={`${row}-${col}`}
+                  >
+                    {isStartInfluence ? "시작" : isFlankInfluence ? "영향" : ""}
+                  </div>
+                ),
+              )}
             </div>
             <div className="grid grid-cols-5 gap-1.5">
               <div className="col-start-3 grid aspect-square min-w-0 place-items-center rounded-md border-2 border-[#9a3f2d]/60 bg-[#9a3f2d]/15 text-sm font-black text-[#6d241b]">
@@ -429,21 +504,31 @@ function BoardPage() {
 }
 
 function OccupationCardsPage() {
+  const [activeSide, setActiveSide] = useState<"front" | "back">("front");
+
+  useEffect(() => {
+    const onAfterPrint = () => {
+      document.body.dataset.printingSide = activeSide;
+    };
+
+    window.addEventListener("afterprint", onAfterPrint);
+    return () => window.removeEventListener("afterprint", onAfterPrint);
+  }, [activeSide]);
+
+  function printSide(side: "front" | "back") {
+    setActiveSide(side);
+    document.body.dataset.printingSide = side;
+    requestAnimationFrame(() => window.print());
+  }
+
   return (
     <ContentPage eyebrow="occupation cards" title="점령카드">
-      <div className="mb-7 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 print:hidden max-md:grid-cols-1">
+      <div className="mb-7 grid gap-4 print:hidden">
         <div className="max-w-3xl leading-8 text-[#211710]/70">
-          점령은 병사 카드를 뒤집어 표시하지 않고, 별도의 양면 점령카드로 표시한다.
-          5x5 전장에 맞춰 총 25장을 만들고, 앞면은 1P, 뒷면은 2P 소유권을 나타낸다.
+          점령은 병사 카드를 뒤집어 표시하지 않고, 별도의 양면 점령카드로
+          표시한다. 5x5 전장에 맞춰 총 25장을 만들고, 앞면은 1P, 뒷면은 2P
+          소유권을 나타낸다.
         </div>
-        <button
-          className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-[#211710]/15 px-4 text-sm font-black text-[#211710]/70"
-          onClick={() => window.print()}
-          type="button"
-        >
-          <Printer size={15} aria-hidden="true" />
-          프린트
-        </button>
       </div>
 
       <div className="mb-8 grid grid-cols-3 gap-2 text-sm font-black text-[#211710]/70 print:hidden max-md:grid-cols-1">
@@ -458,10 +543,67 @@ function OccupationCardsPage() {
         </span>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6 print:flex print:flex-wrap print:items-start print:gap-0">
+      <div className="mb-10 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6 print:hidden">
         {occupationCards.map((card) => (
           <OccupationCardPair card={card} key={card.id} />
         ))}
+      </div>
+
+      <section className="grid gap-4 print:hidden">
+        <div className="max-w-3xl leading-8 text-[#211710]/70">
+          현재 프린트 구성은 기존 4종 점령카드를 종류별로 27장씩, 총 108장
+          출력한다. 각 카드는{" "}
+          <strong className="font-black text-[#211710]">63mm x 88mm</strong>
+          이고, 9장씩 한 페이지에 붙여 배치한다. 앞면과 뒷면은 따로 출력한다.
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#211710]/15 bg-[#fff8ea]/55 p-4 shadow-[0_16px_50px_rgba(33,23,16,.08)]">
+          <div className="flex flex-wrap gap-2">
+            {[
+              ["front", "앞면 미리보기"],
+              ["back", "뒷면 미리보기"],
+            ].map(([side, label]) => (
+              <button
+                className={`inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-black transition ${
+                  activeSide === side
+                    ? "border-[#211710]/30 bg-[#211710] text-[#fff8ea]"
+                    : "border-[#211710]/15 text-[#211710]/70 hover:border-[#211710]/30"
+                }`}
+                key={side}
+                onClick={() => setActiveSide(side as "front" | "back")}
+                type="button"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-[#e7b453] px-4 text-sm font-black text-[#211710]"
+              onClick={() => printSide("front")}
+              type="button"
+            >
+              <Printer size={15} aria-hidden="true" />
+              앞면 프린트
+            </button>
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-[#211710]/20 px-4 text-sm font-black text-[#211710]/75"
+              onClick={() => printSide("back")}
+              type="button"
+            >
+              <Printer size={15} aria-hidden="true" />
+              뒷면 프린트
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div className="print-area">
+        {activeSide === "front" && (
+          <OccupationPrintSide face="front" title="점령카드 앞면" />
+        )}
+        {activeSide === "back" && (
+          <OccupationPrintSide face="back" title="점령카드 뒷면" />
+        )}
       </div>
     </ContentPage>
   );
@@ -475,8 +617,16 @@ function OccupationCardPair({ card }: { card: OccupationCardRecord }) {
         <p className="mt-1 text-sm font-bold text-[#211710]/55">{card.theme}</p>
       </div>
       <div className="grid grid-cols-2 gap-3 print:contents">
-        <OccupationCardFace image={card.front} label={card.frontLabel} name={card.name} />
-        <OccupationCardFace image={card.back} label={card.backLabel} name={`${card.name} SD`} />
+        <OccupationCardFace
+          image={card.front}
+          label={card.frontLabel}
+          name={card.name}
+        />
+        <OccupationCardFace
+          image={card.back}
+          label={card.backLabel}
+          name={`${card.name} SD`}
+        />
       </div>
     </article>
   );
@@ -493,7 +643,11 @@ function OccupationCardFace({
 }) {
   return (
     <figure className="relative isolate aspect-[63/90] overflow-hidden rounded-lg border border-[#24170f]/25 bg-[#17110c] shadow-[0_18px_42px_rgba(33,23,16,.18)] print:h-[90mm] print:w-[63mm] print:break-inside-avoid print:rounded-none print:shadow-none">
-      <img className="absolute inset-0 size-full object-cover" src={image} alt={`${name} ${label}`} />
+      <img
+        className="absolute inset-0 size-full object-cover"
+        src={image}
+        alt={`${name} ${label}`}
+      />
       <div className="absolute inset-x-0 bottom-0 z-10 bg-[linear-gradient(0deg,rgba(13,9,7,.82),rgba(13,9,7,0))] px-3 pb-3 pt-12 print:hidden">
         <figcaption className="flex items-end justify-between gap-2 text-[#fff8ea]">
           <span className="min-w-0 truncate text-sm font-black">{name}</span>
@@ -506,7 +660,67 @@ function OccupationCardFace({
   );
 }
 
+function OccupationPrintSide({
+  face,
+  title,
+}: {
+  face: "front" | "back";
+  title: string;
+}) {
+  return (
+    <section className="grid gap-8">
+      <div className="print:hidden">
+        <h3 className="text-2xl font-black">{title}</h3>
+        <p className="mt-2 text-sm font-bold text-[#211710]/55">
+          108장, 9장씩 12페이지. 각 종류는 27장씩 3페이지를 채운다.
+        </p>
+      </div>
+      <div className="grid gap-8 print:block">
+        {occupationPrintSheets.map((sheet, sheetIndex) => (
+          <section className="print-card-sheet" key={`${face}-${sheetIndex}`}>
+            <div className="mb-3 flex items-center justify-between text-sm font-black text-[#211710]/60 print:hidden">
+              <span>
+                {title} {sheetIndex + 1}페이지
+              </span>
+              <span>
+                {sheetIndex * 9 + 1}-{sheetIndex * 9 + sheet.length} /{" "}
+                {occupationPrintCards.length}
+              </span>
+            </div>
+            <div className="print-card-grid">
+              {sheet.map((card) => (
+                <figure
+                  className="print-card-face"
+                  key={`${face}-${card.printId}`}
+                >
+                  <img
+                    className="absolute inset-0 size-full object-cover"
+                    src={face === "front" ? card.front : card.back}
+                    alt={`${card.name} ${face === "front" ? card.frontLabel : card.backLabel}`}
+                  />
+                  <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-[linear-gradient(0deg,rgba(13,9,7,.82),rgba(13,9,7,0))] px-3 pb-3 pt-12 text-[#fff8ea] print:hidden">
+                    <span className="flex items-end justify-between gap-2">
+                      <span className="min-w-0 truncate text-sm font-black">
+                        {card.name}
+                      </span>
+                      <span className="rounded-full border border-white/25 bg-black/25 px-2 py-0.5 text-xs font-black">
+                        {String(card.copyNumber).padStart(2, "0")}/
+                        {occupationCopiesPerDesign}
+                      </span>
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CardsPage() {
+  const [cardDbView, setCardDbView] = useState<CardDbView>("regular");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<CardFilter>("all");
   const [factionFilter, setFactionFilter] = useState("all");
@@ -515,23 +729,28 @@ function CardsPage() {
   const [keywordFilter, setKeywordFilter] = useState("all");
   const [packFilter, setPackFilter] = useState("all");
 
-  const factions = uniqueValues(allCards.map((card) => card.faction));
-  const rarities = uniqueValues(allCards.map((card) => card.rarity));
-  const keywords = uniqueValues(allCards.flatMap((card) => card.keywords ?? []));
-  const packs = uniqueValues(allCards.map((card) => card.packId));
+  const baseCards =
+    cardDbView === "grandGenerals"
+      ? allCards.filter((card) => card.cardType === "grandGeneral")
+      : allCards.filter((card) => card.cardType !== "grandGeneral");
+  const typeOptions = uniqueValues(baseCards.map((card) => card.cardType));
+  const factions = uniqueValues(baseCards.map((card) => card.faction));
+  const rarities = uniqueValues(baseCards.map((card) => card.rarity));
+  const keywords = uniqueValues(
+    baseCards.flatMap((card) => card.keywords ?? []),
+  );
+  const packs = uniqueValues(baseCards.map((card) => card.packId));
   const values = uniqueValues(
-    allCards.map((card) =>
-      card.cardType === "operation"
-        ? card.powerCost !== undefined
-          ? `힘 ${card.powerCost}`
-          : undefined
+    baseCards.map((card) =>
+      card.cardType === "weather"
+        ? undefined
         : card.capacity !== undefined
-          ? `역량 ${card.capacity}`
+          ? `병력 ${card.capacity}`
           : undefined,
     ),
   );
 
-  const filteredCards = allCards.filter((card) => {
+  const filteredCards = baseCards.filter((card) => {
     const text = [
       card.name,
       card.faction,
@@ -546,7 +765,11 @@ function CardsPage() {
       .join(" ")
       .toLowerCase();
     const valueLabel =
-      card.cardType === "operation" ? `힘 ${card.powerCost}` : `역량 ${card.capacity}`;
+      card.cardType === "weather"
+        ? "날씨"
+        : card.capacity !== undefined
+          ? `병력 ${card.capacity}`
+          : cardTypeLabel(card.cardType);
 
     return (
       (!query || text.includes(query.toLowerCase())) &&
@@ -569,14 +792,41 @@ function CardsPage() {
     setPackFilter("all");
   }
 
+  function changeCardDbView(view: CardDbView) {
+    setCardDbView(view);
+    resetFilters();
+  }
+
   return (
     <ContentPage eyebrow="card database" title="카드 DB">
       <div className="mb-6 max-w-3xl leading-8 text-[#211710]/70 print:hidden">
         카드 DB는 JSON으로 관리한다. 현재 병사 {cardDatabase.soldiers.length}종,
-        장군 {cardDatabase.generals.length}종, 작전 {cardDatabase.operations.length}종을 예시로 둔다.
+        장군 {cardDatabase.generals.length}종, 작전 문서{" "}
+        {cardDatabase.operations.length}종, 도구 {cardDatabase.tools.length}종,
+        날씨 {cardDatabase.weather.length}종, 대장군{" "}
+        {cardDatabase.grandGenerals.length}종을 둔다.
       </div>
 
       <section className="mb-7 grid gap-3 rounded-lg border border-[#211710]/15 bg-[#fff8ea]/55 p-4 shadow-[0_16px_50px_rgba(33,23,16,.08)] print:hidden">
+        <div className="flex flex-wrap gap-2" aria-label="카드 DB 보기">
+          {[
+            ["regular", "일반 카드"],
+            ["grandGenerals", "대장군"],
+          ].map(([view, label]) => (
+            <button
+              className={`inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-black transition ${
+                cardDbView === view
+                  ? "border-[#211710]/30 bg-[#211710] text-[#fff8ea]"
+                  : "border-[#211710]/15 text-[#211710]/70 hover:border-[#211710]/30"
+              }`}
+              key={view}
+              onClick={() => changeCardDbView(view as CardDbView)}
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <label className="relative block">
           <Search
             className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#211710]/40"
@@ -597,44 +847,61 @@ function CardsPage() {
             onChange={(value) => setTypeFilter(value as CardFilter)}
             options={[
               ["all", "전체"],
-              ["soldier", "병사"],
-              ["general", "장군"],
-              ["operation", "작전"],
+              ...typeOptions.map(
+                (item) => [item, cardTypeLabel(item)] as [string, string],
+              ),
             ]}
           />
           <SelectFilter
             label="진영"
             value={factionFilter}
             onChange={setFactionFilter}
-            options={[["all", "전체"], ...factions.map((item) => [item, item] as [string, string])]}
+            options={[
+              ["all", "전체"],
+              ...factions.map((item) => [item, item] as [string, string]),
+            ]}
           />
           <SelectFilter
             label="레어도"
             value={rarityFilter}
             onChange={setRarityFilter}
-            options={[["all", "전체"], ...rarities.map((item) => [item, item] as [string, string])]}
+            options={[
+              ["all", "전체"],
+              ...rarities.map((item) => [item, item] as [string, string]),
+            ]}
           />
           <SelectFilter
-            label="역량/힘"
+            label="병력"
             value={valueFilter}
             onChange={setValueFilter}
-            options={[["all", "전체"], ...values.map((item) => [item, item] as [string, string])]}
+            options={[
+              ["all", "전체"],
+              ...values.map((item) => [item, item] as [string, string]),
+            ]}
           />
           <SelectFilter
             label="키워드"
             value={keywordFilter}
             onChange={setKeywordFilter}
-            options={[["all", "전체"], ...keywords.map((item) => [item, item] as [string, string])]}
+            options={[
+              ["all", "전체"],
+              ...keywords.map((item) => [item, item] as [string, string]),
+            ]}
           />
           <SelectFilter
             label="팩"
             value={packFilter}
             onChange={setPackFilter}
-            options={[["all", "전체"], ...packs.map((item) => [item, item] as [string, string])]}
+            options={[
+              ["all", "전체"],
+              ...packs.map((item) => [item, item] as [string, string]),
+            ]}
           />
         </div>
         <div className="flex items-center justify-between gap-3">
-          <strong className="text-sm text-[#211710]/70">{filteredCards.length}장</strong>
+          <strong className="text-sm text-[#211710]/70">
+            {filteredCards.length}장
+          </strong>
           <div className="flex flex-wrap justify-end gap-2">
             <button
               className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[#211710]/15 px-3 text-sm font-black text-[#211710]/70 print:hidden"
@@ -666,76 +933,41 @@ function CardsPage() {
 }
 
 function CardPreview({ card }: { card: CardRecord }) {
-  const isGeneral = card.cardType === "general";
   const isOperation = card.cardType === "operation";
+  const isTool = card.cardType === "tool";
+  const isWeather = card.cardType === "weather";
+  const showControlGrid =
+    !isWeather &&
+    (card.movement !== undefined || card.controlIconPosition !== undefined);
+  const showAttackGrid =
+    !isWeather &&
+    (card.attackInfluence !== undefined ||
+      card.attackIconPosition !== undefined);
   const typeLabel = cardTypeLabel(card.cardType);
-  const factionLabel = card.faction ?? "공용";
-  const classLabel = card.className ?? card.timing ?? "교전";
+  const factionLabel = card.faction ?? "진영 없음";
+  const classLabel = card.className ?? card.timing ?? "차례";
   const valueLabel =
-    card.cardType === "operation" ? `힘 ${card.powerCost}` : `역량 ${card.capacity}`;
+    card.cardType === "weather"
+      ? "날씨"
+      : card.capacity !== undefined
+        ? `병력 ${card.capacity}`
+        : typeLabel;
 
-  if (isGeneral) {
-    return (
-      <article className="relative isolate aspect-[90/63] overflow-hidden rounded-xl border border-[#24170f]/25 bg-[#24170f] p-[3%] shadow-[0_18px_42px_rgba(33,23,16,.18)] print:h-[63mm] print:w-[90mm] print:break-inside-avoid print:rounded-none print:shadow-none">
+  return (
+    <article className="relative isolate aspect-[63/90] overflow-hidden rounded-xl border border-[#24170f]/25 bg-[#17110c] shadow-[0_18px_42px_rgba(33,23,16,.18)] print:h-[90mm] print:w-[63mm] print:break-inside-avoid print:rounded-none print:shadow-none">
+      {card.illustration ? (
         <img
-          className="absolute inset-0 -z-10 size-full object-cover opacity-70"
+          className={`absolute left-[11.3%] top-[9.5%] z-0 h-[66.3%] w-[77.5%] object-cover ${
+            isOperation || isTool ? "grayscale saturate-0" : ""
+          }`}
           src={card.illustration}
           alt=""
         />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(20,14,9,.9),rgba(20,14,9,.46)),linear-gradient(0deg,rgba(232,221,199,.92),rgba(232,221,199,.18)_52%,rgba(232,221,199,.02))]" />
-        <div className="grid h-full grid-cols-[1fr_.78fr] gap-[4%] rounded-lg border border-[#ead6ae]/35 bg-[#f3e8cf]/82 p-[4%] text-[#211710] backdrop-blur-[1px]">
-          <div className="flex min-w-0 flex-col">
-            <div className="mb-2 flex items-center justify-between gap-2 text-[clamp(.62rem,1.1vw,.78rem)] font-black text-[#7a2d21]">
-              <span>{typeLabel}</span>
-              <span>{card.serial}</span>
-            </div>
-            <h3 className="mb-2 truncate text-[clamp(1.1rem,2.2vw,1.7rem)] font-black leading-tight">
-              {card.name}
-            </h3>
-            <p className="line-clamp-5 text-[clamp(.68rem,1.2vw,.86rem)] font-semibold leading-snug text-[#211710]/78">
-              {card.effect}
-            </p>
-            <blockquote className="mt-auto line-clamp-2 border-l-4 border-[#7a2d21]/25 pl-2 text-[clamp(.56rem,1vw,.72rem)] font-bold italic text-[#211710]/55">
-              {card.flavor}
-            </blockquote>
-          </div>
-          <div className="grid min-w-0 grid-rows-[1fr_auto] gap-2">
-            <div className="grid place-items-center rounded-md border border-[#211710]/15 bg-[#fff8ea]/55">
-              {card.emblem ? (
-                <img
-                  className="max-h-[72%] max-w-[72%] object-contain opacity-80"
-                  src={card.emblem}
-                  alt={`${factionLabel} 엠블럼`}
-                />
-              ) : (
-                <span className="text-[clamp(2.5rem,7vw,5rem)] font-black text-[#211710]/35">
-                  {card.sigil}
-                </span>
-              )}
-            </div>
-            <div className="grid gap-1 text-[clamp(.58rem,1vw,.72rem)] font-black text-[#211710]/70">
-              <div className="flex justify-between gap-2">
-                <span className="truncate">{factionLabel} · {classLabel}</span>
-                <span>{card.rarity}</span>
-              </div>
-            </div>
-          </div>
+      ) : (
+        <div className="absolute left-[11.3%] top-[9.5%] z-0 grid h-[66.3%] w-[77.5%] place-items-center bg-[#f3ead7] text-[clamp(2.5rem,7vw,4.6rem)] font-black text-[#211710]/10">
+          {card.sigil}
         </div>
-      </article>
-    );
-  }
-
-  return (
-    <article
-      className="relative isolate aspect-[63/90] overflow-hidden rounded-xl border border-[#24170f]/25 bg-[#17110c] shadow-[0_18px_42px_rgba(33,23,16,.18)] print:h-[90mm] print:w-[63mm] print:break-inside-avoid print:rounded-none print:shadow-none"
-    >
-      <img
-        className={`absolute left-[8.5%] top-[16%] z-0 h-[39%] w-[83%] object-cover ${
-          isOperation ? "grayscale saturate-0" : ""
-        }`}
-        src={card.illustration}
-        alt=""
-      />
+      )}
       {card.frame && (
         <img
           className="pointer-events-none absolute inset-0 z-30 size-full object-fill"
@@ -743,45 +975,234 @@ function CardPreview({ card }: { card: CardRecord }) {
           alt=""
         />
       )}
-      <div className="absolute left-[24%] right-[24%] top-[6.9%] z-40 flex h-[5.6%] items-center justify-center">
-        <h3 className="max-w-full truncate text-center text-[clamp(.7rem,1.35vw,1rem)] font-black leading-none text-[#211710]">
-          {card.name}
-        </h3>
-      </div>
-      <div className="absolute left-[8.2%] top-[19.6%] z-40 grid size-[11.5%] place-items-center rounded-full text-[clamp(.64rem,1.2vw,.9rem)] font-black text-[#f7ead5] [text-shadow:0_1px_2px_rgba(0,0,0,.65)]">
-        {card.cardType === "operation" ? card.powerCost : card.movement?.replace(/\s/g, "")}
-      </div>
-      <div className="absolute right-[8.2%] top-[19.6%] z-40 grid size-[11.5%] place-items-center rounded-full text-[clamp(.75rem,1.45vw,1.05rem)] font-black text-[#f7ead5] [text-shadow:0_1px_2px_rgba(0,0,0,.65)]">
-        {card.cardType === "operation" ? "作" : card.capacity}
-      </div>
-      <div className="absolute left-[12%] right-[12%] top-[58.7%] z-40 h-[20%] overflow-hidden px-[3%] py-[2%]">
-        <p className="line-clamp-5 text-[clamp(.56rem,1.05vw,.74rem)] font-bold leading-snug text-[#211710]/82">
-          {card.effect}
+      <CardTitleLabel name={card.name} />
+      {showControlGrid && (
+        <div className="absolute left-[9.8%] top-[13.8%] z-40 w-[18.5%]">
+          <RangeGrid
+            activeCells={card.movement}
+            markerCell={card.controlIconPosition}
+            tone="control"
+          />
+        </div>
+      )}
+      {showAttackGrid && (
+        <div className="absolute right-[9.8%] top-[13.8%] z-40 w-[18.5%]">
+          <RangeGrid
+            activeCells={card.attackInfluence}
+            markerCell={card.attackIconPosition}
+            tone="attack"
+          />
+        </div>
+      )}
+      {!isWeather && card.capacity !== undefined && (
+        <PowerCircle value={card.capacity} />
+      )}
+      <div className="absolute left-[12%] right-[12%] top-[76%] z-40 h-[12.4%] overflow-hidden px-[3%] py-[1%]">
+        <p className="line-clamp-4 text-[clamp(.5rem,.95vw,.66rem)] font-bold leading-[1.24] text-[#211710]/82">
+          <CardEffectText text={card.effect} />
         </p>
       </div>
-      <div className="absolute bottom-[7.8%] left-[10%] z-40 max-w-[31%] truncate text-[clamp(.52rem,1vw,.7rem)] font-black text-[#f7ead5] [text-shadow:0_1px_2px_rgba(0,0,0,.65)]">
-        {factionLabel}
-      </div>
-      <div className="absolute bottom-[7.8%] right-[10%] z-40 max-w-[31%] truncate text-right text-[clamp(.52rem,1vw,.7rem)] font-black text-[#f7ead5] [text-shadow:0_1px_2px_rgba(0,0,0,.65)]">
-        {card.serial}
-      </div>
-      <div className="absolute bottom-[7.8%] left-1/2 z-40 grid size-[12%] -translate-x-1/2 place-items-center">
-        {card.emblem ? (
-          <img
-            className="max-h-full max-w-full object-contain"
-            src={card.emblem}
-            alt={`${factionLabel} 엠블럼`}
-          />
-        ) : (
-          <span className="text-[clamp(.9rem,2vw,1.25rem)] font-black text-[#211710]/80">
-            {card.sigil}
-          </span>
-        )}
-      </div>
+      <SpeciesLine
+        label={card.typeSpeciesLabel ?? (isWeather ? "날씨" : typeLabel)}
+      />
+      <CardMeta rarity={card.rarity} serial={card.serial} />
+      {card.emblem && (
+        <CardEmblem src={card.emblem} label={`${factionLabel} 엠블럼`} />
+      )}
       <div className="sr-only">
         {typeLabel} {valueLabel} {classLabel}
       </div>
     </article>
+  );
+}
+
+function CardEffectText({ text }: { text: string }) {
+  const parts = text.split(/(`[^`]+`|\[[^\]]+\])/g).filter(Boolean);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith("`") && part.endsWith("`")) {
+          const inner = part.slice(1, -1);
+          if (inner.startsWith("[") && inner.endsWith("]")) {
+            return (
+              <KeywordChip
+                key={`${part}-${index}`}
+                keyword={inner.slice(1, -1)}
+              />
+            );
+          }
+          return (
+            <strong
+              className="font-black text-[#17110c]"
+              key={`${part}-${index}`}
+            >
+              {inner}
+            </strong>
+          );
+        }
+
+        if (part.startsWith("[") && part.endsWith("]")) {
+          return (
+            <KeywordChip key={`${part}-${index}`} keyword={part.slice(1, -1)} />
+          );
+        }
+
+        return <span key={`${part}-${index}`}>{part}</span>;
+      })}
+    </>
+  );
+}
+
+function KeywordChip({ keyword }: { keyword: string }) {
+  return (
+    <span
+      className={`mx-[1px] inline-flex items-center rounded-[4px] border px-[2px] py-0 text-[.84em] font-black leading-none align-baseline ${keywordChipClassName(
+        keyword,
+      )}`}
+    >
+      {keyword}
+    </span>
+  );
+}
+
+function keywordChipClassName(keyword: string) {
+  const palette: Record<string, string> = {
+    출정: "border-[#8a3f0a] bg-[#fff8ea]/70 text-[#8a3f0a]",
+    단말마: "border-[#7b1fb0] bg-[#f8ecff]/80 text-[#7b1fb0]",
+    전투광: "border-[#bf1d16] bg-[#bf1d16] text-white",
+    전투: "border-[#bf1d16] bg-[#fff8ea]/70 text-[#bf1d16]",
+    전투광부여: "border-[#bf1d16] bg-[#bf1d16] text-white",
+    매복: "border-[#04713a] bg-[#eaf7ef]/85 text-[#04713a]",
+    자폭: "border-[#334f43] bg-[#334f43] text-white",
+    상시: "border-[#04713a] bg-[#04713a] text-white",
+    퇴각: "border-[#0f4c9c] bg-[#0f4c9c] text-white",
+    보류: "border-[#0f4c9c] bg-[#edf4ff]/85 text-[#0f4c9c]",
+    보류1: "border-[#0f4c9c] bg-[#edf4ff]/85 text-[#0f4c9c]",
+    보급: "border-[#315847] bg-[#315847] text-white",
+    장악: "border-[#c47b00] bg-[#fff5db]/90 text-[#c47b00]",
+    교전: "border-[#6f3b00] bg-[#6f3b00] text-white",
+    자폭부여: "border-[#334f43] bg-[#334f43] text-white",
+    회복: "border-[#04713a] bg-[#eaf7ef]/85 text-[#04713a]",
+    이동: "border-[#465e55] bg-[#eef4ef]/85 text-[#465e55]",
+    기지탐색: "border-[#465e55] bg-[#eef4ef]/85 text-[#465e55]",
+    기지조작: "border-[#465e55] bg-[#eef4ef]/85 text-[#465e55]",
+    국면전환: "border-[#6f3b00] bg-[#fff1df]/90 text-[#6f3b00]",
+  };
+
+  return (
+    palette[keyword.replace(/\s/g, "")] ??
+    "border-[#211710] bg-[#fff8ea]/75 text-[#211710]"
+  );
+}
+
+function CardTitleLabel({ name }: { name: string }) {
+  return (
+    <div className="absolute left-[20%] right-[20%] top-[4.9%] z-40 flex h-[8.4%] items-center justify-center">
+      <img
+        className="pointer-events-none absolute inset-0 size-full object-fill opacity-95"
+        src={brushLabelImage}
+        alt=""
+      />
+      <h3 className="relative z-10 max-w-[78%] truncate text-center text-[clamp(.68rem,1.25vw,.92rem)] font-black leading-none text-[#f8efdd] [text-shadow:0_1px_2px_rgba(0,0,0,.55)]">
+        {name}
+      </h3>
+    </div>
+  );
+}
+
+function RangeGrid({
+  activeCells,
+  markerCell,
+  tone,
+}: {
+  activeCells?: string;
+  markerCell?: string;
+  tone: "control" | "attack";
+}) {
+  const active = parseRangeCells(activeCells);
+  const marker = Number(markerCell);
+  const cellImage =
+    tone === "control" ? rangeCellControlImage : rangeCellAttackImage;
+  const cellOrder = [7, 8, 9, 4, 5, 6, 1, 2, 3];
+
+  return (
+    <div className="relative aspect-square">
+      <img
+        className="absolute inset-0 size-full object-fill opacity-95"
+        src={rangeGridFrameImage}
+        alt=""
+      />
+      <div className="absolute inset-[4%] grid grid-cols-3 grid-rows-3">
+        {cellOrder.map((cell) => (
+          <div className="relative" key={cell}>
+            {active.has(cell) && (
+              <img
+                className="absolute inset-[8%] size-[84%] object-fill opacity-85"
+                src={cellImage}
+                alt=""
+              />
+            )}
+            {marker === cell && (
+              <img
+                className="absolute left-1/2 top-1/2 size-[54%] -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-[0_1px_1px_rgba(255,248,230,.8)]"
+                src={rangePersonMarkerImage}
+                alt=""
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PowerCircle({ value }: { value: number }) {
+  return (
+    <div className="absolute right-[12%] top-[31.7%] z-40 grid size-[12.5%] place-items-center rounded-full border border-[#f8efdd]/35 bg-[#17110c] text-[clamp(.78rem,1.55vw,1.12rem)] font-black text-[#f8efdd] shadow-[0_3px_8px_rgba(0,0,0,.32)]">
+      {value}
+    </div>
+  );
+}
+
+function SpeciesLine({ label }: { label: string }) {
+  return (
+    <div className="absolute bottom-[7.3%] left-[9.5%] z-40 max-w-[34%]">
+      <span className="block truncate border-b border-[#211710]/42 pb-[1px] text-[clamp(.5rem,.95vw,.66rem)] font-black text-[#211710]/78">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function CardMeta({ rarity, serial }: { rarity: string; serial: string }) {
+  return (
+    <div className="absolute bottom-[7.3%] right-[9.5%] z-40 max-w-[38%] border-b border-[#211710]/42 pb-[1px] text-right text-[clamp(.48rem,.9vw,.64rem)] font-black text-[#211710]/78">
+      <span>{rarity}</span>
+      <span className="mx-1 text-[#211710]/35">/</span>
+      <span>{serial}</span>
+    </div>
+  );
+}
+
+function CardEmblem({ label, src }: { label: string; src: string }) {
+  return (
+    <div className="absolute bottom-[3.9%] left-1/2 z-40 grid size-[10.5%] -translate-x-1/2 place-items-center">
+      <img
+        className="max-h-full max-w-full object-contain opacity-90"
+        src={src}
+        alt={label}
+      />
+    </div>
+  );
+}
+
+function parseRangeCells(value?: string) {
+  return new Set(
+    (value ?? "")
+      .split(",")
+      .map((item) => Number(item.trim()))
+      .filter((item) => item >= 1 && item <= 9),
   );
 }
 
@@ -837,7 +1258,8 @@ function NotesPage() {
     <ContentPage eyebrow="development" title="개발노트">
       <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
         <NotePanel icon={ClipboardList} title="룰 버전">
-          현재 작업 기준은 v0.1이다. 큰 규칙 변경이 쌓이면 다음 버전으로 분리한다.
+          현재 작업 기준은 v0.1이다. 큰 규칙 변경이 쌓이면 다음 버전으로
+          분리한다.
         </NotePanel>
         <NotePanel icon={Map} title="다음 작업">
           카드 효과와 보드 구조를 실제 플레이테스트 규칙에 맞춰 조정한다.
@@ -888,7 +1310,11 @@ function NotePanel({
   title,
 }: {
   children: ReactNode;
-  icon: ComponentType<{ size?: number; "aria-hidden"?: boolean; className?: string }>;
+  icon: ComponentType<{
+    size?: number;
+    "aria-hidden"?: boolean;
+    className?: string;
+  }>;
   title: string;
 }) {
   return (
@@ -903,7 +1329,10 @@ function NotePanel({
 function cardTypeLabel(cardType: string) {
   if (cardType === "soldier") return "병사";
   if (cardType === "general") return "장군";
-  return "작전";
+  if (cardType === "grandGeneral") return "대장군";
+  if (cardType === "tool") return "도구";
+  if (cardType === "weather") return "날씨";
+  return "작전 문서";
 }
 
 export default App;

@@ -12,4 +12,27 @@ id,task,status,notes,updated_at
 11,Replace operation card names,done,Selected operation-like names from existing GRNS card pool and applied to operation cards,2026-06-14 22:02:59 +0900
 12,Fix GitHub Pages pnpm setup,done,Installed pnpm before setup-node cache step in deploy workflow,2026-06-14 22:17:34 +0900
 13,Rework operation effects and half-board view,done,Aligned operation effects and rendered 2.5x5 player-side board with outside castle,2026-06-15 10:14:07 +0900
-14,Add occupation card tab and printable previews,in_progress,Approved proposal 015 to add 1P/2P occupation card previews with generated art,2026-06-15 11:26:42 +0900
+14,Add occupation card tab and printable previews,done,Implemented proposal 015 with occupation tab printable previews and generated art,2026-06-27 14:30:39 +0900
+15,Add printable occupation card sheets,done,Added print tab with 25-card front and back sheets at 63x88mm in 9-card pages,2026-06-27 14:32:27 +0900
+16,Print 108 occupation cards by design,done,Implemented proposal 018 with 4 occupation designs as 27 copies each for 108-card front and back sheets,2026-06-27 14:54:36 +0900
+17,Remove engagement phase and revise supply rules,done,Updated rules app copy card data and sync docs to use base supply operation documents reactions and no engagement phase,2026-06-27 15:02:35 +0900
+18,Create card frame reference and range assets,done,Moved card-design reference and generated transparent frame plus reusable range overlay PNGs,2026-06-27 15:22:18 +0900
+19,Clean card frame transparent art zone,done,Created goe-card-frame-v3 with cleaner transparent art and range zones for future illustrations,2026-06-27 15:32:28 +0900
+20,Regenerate clean card frame overlay,done,Generated clean frame brush label and range person marker transparent PNG assets,2026-06-27 16:46:45 +0900
+21,Document onboarding card set,done,Implemented proposal 023 with onboarding card docs and rules app/card data updates for 병력 전투 교전 보류 매복,2026-06-27 23:42:36 +0900
+22,Create minimal ink paper card frame,done,Generated minimal transparent frame and applied it to Card DB previews with updated preview coordinates,2026-06-28 00:06:04 +0900
+23,Apply onboarding cards to Card DB,done,Rebuilt Card DB as onboarding cards with separate tools weather retained and 40-card decks verified for four factions,2026-06-28 12:33:26 +0900
+24,Fill Garak and Sipje onboarding cards,done,Implemented proposal 025 with Garak and Sipje card docs plus graveyard tool placement and token rules,2026-06-28 12:24:46 +0900
+25,Build card preview UI from onboarding fields,done,Rendered brush title range grids power circle species and rarity serial placeholders and removed operation tool cost display,2026-06-28 12:45:11 +0900
+26,Add weather cards and generated art,done,Implemented proposal 024 with 10 weather cards data UI support and generated illustrations,2026-06-28 12:46:09 +0900
+27,Render general cards vertically,done,Removed horizontal general preview so general cards render as vertical standard cards while keeping the general type,2026-06-28 12:58:10 +0900
+28,Move faction operation docs and add grand generals,done,Implemented proposal 029 by moving faction operation tool docs and documenting grand general leader commands,2026-06-28 13:03:10 +0900
+29,Regenerate selected weather card art,done,Implemented proposal 030 by replacing five weather illustrations with stronger scene-specific art,2026-06-28 13:23:45 +0900
+30,Clean card type species and emblems,done,Normalized type species labels replaced bottom sigils with emblems and removed weather power circle,2026-06-28 13:26:21 +0900
+31,Clean factions keywords grand generals and print tabs,done,Implemented proposal 031 with grand general DB subtab print relocation neutral factions weather no faction and cleaned keyword filters,2026-06-28 13:43:47 +0900
+32,Sync cards JSON and improve card preview readability,done,Synced cards JSON to onboarding docs and updated card preview effect area keyword chips bold backticks and empty range grids,2026-06-28 13:57:50 +0900
+33,Fix card effect gap and image edge,done,Restored the full illustration area removed the paper overlay and lowered the effect text block below the image boundary,2026-06-28 14:15:18 +0900
+34,Create horizontal grand general cards,in_progress,Approved proposal 035 to create landscape grand general frame illustrations preview and Card DB print support,2026-06-28 14:16:40 +0900
+35,Generate faction ink card illustrations,in_progress,Approved proposal 036 to overwrite card-01 through card-27 with symbolic ink-wash illustrations and faction highlight colors,2026-06-28 14:15:16 +0900
+36,Regenerate weather cards as monochrome ink art,in_progress,Implement proposal 034 by creating 10 new black and white weather illustrations and reconnecting Card DB paths,2026-06-28 14:18:20 +0900
+37,Fit keyword chips in card effects,done,Kept pill chips while reducing chip height removing vertical offset and increasing effect line height to avoid clipping,2026-06-28 14:28:16 +0900

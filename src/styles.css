@@ -84,3 +84,75 @@ button,
 select {
   cursor: pointer;
 }
+
+.print-card-sheet {
+  width: min-content;
+  margin: 0 auto;
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-card-sheet:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.print-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 63mm);
+  grid-auto-rows: 88mm;
+  gap: 0;
+  width: 189mm;
+}
+
+.print-card-face {
+  position: relative;
+  isolate: isolate;
+  width: 63mm;
+  height: 88mm;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(36, 23, 15, 0.2);
+  border-radius: 8px;
+  background: #17110c;
+  box-shadow: 0 18px 42px rgba(33, 23, 16, 0.18);
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    margin: 0;
+    background: white !important;
+  }
+
+  .print-area {
+    width: 189mm;
+    margin: 0 auto;
+  }
+
+  .print-card-sheet {
+    width: 189mm;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-card-grid {
+    gap: 0;
+    width: 189mm;
+  }
+
+  .print-card-face {
+    width: 63mm;
+    height: 88mm;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
